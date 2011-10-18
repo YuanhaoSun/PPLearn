@@ -25,6 +25,9 @@ from sklearn.pipeline import Pipeline
 from sklearn.grid_search import GridSearchCV
 from sklearn import metrics
 
+###############################################################################
+# Options
+###############################################################################
 
 # Display progress logs on stdout
 logging.basicConfig(level=logging.INFO,
@@ -56,8 +59,10 @@ print __doc__
 op.print_help()
 print
 
+
 ###############################################################################
 # Load some categories from the training set
+###############################################################################
 
 #categories = ['SafeHarbor','Truste', 'Change', 'Location', 'Security', 'Contact']
 categories = ['Advertising','CA', 'Collect', 'Cookies', 'Security', 'Share']
@@ -113,9 +118,9 @@ if opts.select_chi2:
     print "done in %fs" % (time() - t0)
     print
 
+# Sparse array in NumPy
 vocabulary = np.array([t for t, i in sorted(vectorizer.vocabulary.iteritems(),
                                             key=itemgetter(1))])
-
 
 def trim(s):
     """Trim string to fit on terminal (assuming 80-column display)"""
@@ -124,6 +129,7 @@ def trim(s):
 
 ###############################################################################
 # Benchmark classifiers
+###############################################################################
 def benchmark(clf):
     print 80 * '_'
     print "Training: "
@@ -163,6 +169,12 @@ def benchmark(clf):
 
     print
     return score, train_time, test_time
+
+
+
+###############################################################################
+# Test various classifiers
+###############################################################################
 
 for clf, name in ((RidgeClassifier(tol=1e-1), "Ridge Classifier"),
                   (KNeighborsClassifier(n_neighbors=15), "kNN")):
