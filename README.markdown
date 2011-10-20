@@ -6,7 +6,7 @@ This is the repo for all tests and developments using Python for TM&NLP tasks on
 List of Content
 ================================
 **01_TestClassifiers.py** - tests various classifiers available in Scikits-learn.<br>
-**02_xx** - coming.<br>
+**02_Two_Layered_Classifier** - Two layered classifier, with a hard-coded example test for now.<br>
 
 Warning: Below are just sample text for further usage.
 ================================
