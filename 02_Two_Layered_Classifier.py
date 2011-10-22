@@ -46,13 +46,13 @@ print __doc__
 print "Loading privacy policy datasets..."
 data_train = load_files('Privacypolicy/raw', categories = categories,
                         shuffle = True, random_state = 42)
-ca_train = load_files('Privacypolicy/train_ca', categories = ca_categories,
+ca_train = load_files('Privacypolicy/raw_ca', categories = ca_categories,
                         shuffle = True, random_state = 42)
-collect_train = load_files('Privacypolicy/train_collect', categories = collect_categories,
+collect_train = load_files('Privacypolicy/raw_collect', categories = collect_categories,
                         shuffle = True, random_state = 42)
-cookies_train = load_files('Privacypolicy/train_cookies', categories = cookies_categories,
+cookies_train = load_files('Privacypolicy/raw_cookies', categories = cookies_categories,
                         shuffle = True, random_state = 42)
-share_train = load_files('Privacypolicy/train_share', categories = share_categories,
+share_train = load_files('Privacypolicy/raw_share', categories = share_categories,
                         shuffle = True, random_state = 42)
 print 'Data loaded!'
 print
@@ -115,9 +115,18 @@ print
 print "Training L2 Classifiers..."
 t0 = time()
 
+# comment out all linearSVC
+# clf_ca = LinearSVC(loss='l2', penalty='l2', C=1000, dual=False, tol=1e-3)
+# clf_collect = LinearSVC(loss='l2', penalty='l2', C=256, dual=False, tol=1e-2)
+# clf_cookies = LinearSVC(loss='l2', penalty='l2', C=1000, dual=False, tol=1e-3)
+# clf_share = LinearSVC(loss='l2', penalty='l2', C=1000, dual=False, tol=1e-3)
+
+# v0.2 adjusted the classifiers after test results
+# Unfixed bug: SGDClassifier returns Numpy integer in predict method...
+# clf_ca = SGDClassifier(alpha=.0001, n_iter=50, penalty='l1')
 clf_ca = LinearSVC(loss='l2', penalty='l2', C=1000, dual=False, tol=1e-3)
-clf_collect = LinearSVC(loss='l2', penalty='l2', C=1000, dual=False, tol=1e-3)
-clf_cookies = LinearSVC(loss='l2', penalty='l2', C=1000, dual=False, tol=1e-3)
+clf_collect = KNeighborsClassifier(n_neighbors=13)
+clf_cookies = KNeighborsClassifier(n_neighbors=3)
 clf_share = LinearSVC(loss='l2', penalty='l2', C=1000, dual=False, tol=1e-3)
 
 clf_ca.fit(X_L2_ca, y_L2_ca)
@@ -164,7 +173,7 @@ for doc, category in zip(docs_new, predicted):
         elif data_train.target_names[category] == 'Collect':
             doc_li = [doc]
             X_new_l2 = vectorizer.transform(doc_li)
-            L2_predicted = clf_ca.predict(X_new_l2)
+            L2_predicted = clf_collect.predict(X_new_l2)
             for category_l2 in L2_predicted:
                 print '%r => %s => %s' % (doc, data_train.target_names[category], 
                                         collect_train.target_names[category_l2])
@@ -173,7 +182,7 @@ for doc, category in zip(docs_new, predicted):
         elif data_train.target_names[category] == 'Cookies':
             doc_li = [doc]
             X_new_l2 = vectorizer.transform(doc_li)
-            L2_predicted = clf_ca.predict(X_new_l2)
+            L2_predicted = clf_cookies.predict(X_new_l2)
             for category_l2 in L2_predicted:
                 print '%r => %s => %s' % (doc, data_train.target_names[category], 
                                         cookies_train.target_names[category_l2])
