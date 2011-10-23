@@ -7,7 +7,6 @@ List of Content
 ================================
 **01_test_classifiers.py** - tests various classifiers available in scikit-learn.<br>
 ***02_two_layered_classifier*** - Two layered classifier, with a hard-coded example test for now.<br>
-**03_test_clustering.py**- tests text clustering with scikit-learn.<br>
 
 Warning: Below are just sample text for further usage.
 ================================
