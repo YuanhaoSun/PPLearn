@@ -7,6 +7,7 @@ List of Content
 ================================
 **01_test_classifiers.py** - tests various classifiers available in scikit-learn.<br>
 ***02_two_layered_classifier*** - Two layered classifier, with a hard-coded example test for now.<br>
+**03_plot_randomPCA** - plots all labelled instances in 2D using PCA for dimensional reduction.<br>
 
 Warning: Below are just sample text for further usage.
 ================================
