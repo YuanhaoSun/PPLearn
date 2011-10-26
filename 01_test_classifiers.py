@@ -25,6 +25,8 @@ from sklearn.pipeline import Pipeline
 from sklearn.grid_search import GridSearchCV
 from sklearn import metrics
 
+from sklearn.multiclass import OneVsRestClassifier, OneVsOneClassifier
+
 ###############################################################################
 # Options
 ###############################################################################
@@ -64,8 +66,19 @@ print
 # Load some categories from the training set
 ###############################################################################
 
-#categories = ['SafeHarbor','Truste', 'Change', 'Location', 'Security', 'Contact']
-categories = ['Advertising','CA', 'Collect', 'Cookies', 'Security', 'Share']
+# categories = ['SafeHarbor','Truste', 'Change', 'Location', 'Children', 'Contact', 
+#             'Process', 'Retention']
+# categories = ['Advertising','CA', 'Collect', 'Cookies', 'Security', 'Share']
+
+categories = ['Advertising','CA', 'Collect', 'Cookies', 'Security', 'Share', 
+            'SafeHarbor','Truste', 'Change', 'Location', 'Children', 'Contact', 
+            'Process', 'Retention']
+
+# categories = ['ca', 'ca.subscription']
+# categories = ['collect.automatic', 'collect.other', 'collect.user']
+# categories = ['cookies', 'cookies.choice']
+# categories = ['share.statement', 'share.third.party', 'share.law', 'share.ma']
+
 
 #Uncomment the following to do the analysis on all the categories
 #categories = None
@@ -75,10 +88,9 @@ print categories if categories else "all"
 
 
 data_train = load_files('Privacypolicy/train', categories = categories,
-						shuffle = True, random_state = 42)
-
+                        shuffle = True, random_state = 42)
 data_test = load_files('Privacypolicy/test', categories = categories, 
-						shuffle = True, random_state = 42)
+                        shuffle = True, random_state = 42)
 
 print 'data loaded'
 
@@ -177,7 +189,7 @@ def benchmark(clf):
 ###############################################################################
 
 for clf, name in ((RidgeClassifier(tol=1e-1), "Ridge Classifier"),
-                  (KNeighborsClassifier(n_neighbors=15), "kNN")):
+                  (KNeighborsClassifier(n_neighbors=13), "kNN")):
     print 80 * '='
     print name
     results = benchmark(clf)
@@ -186,8 +198,14 @@ for penalty in ["l2", "l1"]:
     print 80 * '='
     print "%s penalty" % penalty.upper()
     # Train Liblinear model
+
     liblinear_results = benchmark(LinearSVC(loss='l2', penalty=penalty, C=1000,
-                                            dual=False, tol=1e-3))
+                                        dual=False, tol=1e-3))
+    # Added OneVsOne and OneVsRest tests
+    liblinear_results = benchmark(OneVsOneClassifier(LinearSVC(loss='l2', penalty=penalty, C=1000,
+                                            dual=False, tol=1e-3)))
+    liblinear_results = benchmark(OneVsRestClassifier(LinearSVC(loss='l2', penalty=penalty, C=1000,
+                                            dual=False, tol=1e-3)))
 
     # Train SGD model
     sgd_results = benchmark(SGDClassifier(alpha=.0001, n_iter=50,
