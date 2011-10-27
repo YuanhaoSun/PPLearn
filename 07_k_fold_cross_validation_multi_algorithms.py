@@ -1,8 +1,10 @@
 """
 ======================================================
-Classificatio with CrossValidation
+Experiment:  # training data 
 ======================================================
-Using CrossValidation to get the fair accuracy of algorithms.
+To gather the experiments results for various classifiers,
+on the metrics changes with # training data increses.
+Then plot it.
 """
 
 print __doc__
@@ -111,7 +113,6 @@ def class_metrics(y_true, y_pred, acc=None, pre=None, rec=None, beta=1.0, labels
             return np.average(recall, weights=support)     
 
 
-
 ###############################################################################
 # Preprocessing
 
@@ -126,8 +127,8 @@ print categories if categories else "all"
 data_set = load_files('Privacypolicy/raw', categories = categories,
                         shuffle = True, random_state = 42)
 print 'data loaded'
-print "%d documents" % len(data_set.data)
-print "%d categories" % len(data_set.target_names)
+# print "%d documents" % len(data_set.data)
+# print "%d categories" % len(data_set.target_names)
 print
 
 # Extract features
@@ -136,10 +137,10 @@ t0 = time()
 vectorizer = Vectorizer(max_features=10000)
 X = vectorizer.fit_transform(data_set.data)
 X = Normalizer(norm="l2", copy=False).transform(X)
-print type(X)
+
 # X = X.todense()
-# X = X.toarray()
-print type(X)
+X_den = X.toarray()
+
 y = data_set.target
 n_samples, n_features = X.shape
 print "done in %fs" % (time() - t0)
@@ -154,65 +155,129 @@ print
 # kf = KFold(n_samples, k=10)
 kf = KFold(n_samples, k=10, indices=True)
 
+#set number of neighbors for kNN
+n_neighb = 3
+if n_samples > 700:
+    n_neighb = 13
+elif n_samples > 600:
+    n_neighb = 11
+elif n_samples > 500:
+    n_neighb = 9
+elif n_samples > 400:
+    n_neighb = 7
+elif n_samples > 300:
+    n_neighb = 6    
+
+# store the name of logistic regression
+Logisticl1 = "OneVsRestClassifier(estimator=LogisticRegression(C=1000, dual=False, fit_intercept=True,\
+          intercept_scaling=1, penalty=l1, tol=0.0001),\
+          estimator__C=1000, estimator__dual=False,\
+          estimator__fit_intercept=True, estimator__intercept_scaling=1,\
+          estimator__penalty=l1, estimator__tol=0.0001)"
+
+
+# Make a classifier list
+clfs = []
 # Note: NBs are not working
-# clf = BernoulliNB(alpha=.1)
-# clf = MultinomialNB(alpha=.01)
-# clf = OneVsRestClassifier(LogisticRegression(penalty='l2'))
-# clf = KNeighborsClassifier(n_neighbors=13)
-clf = RidgeClassifier(tol=1e-1)
-# clf = SGDClassifier(alpha=.0001, n_iter=50, penalty="elasticnet")
-# clf = LinearSVC(loss='l2', penalty='l1', C=1000, dual=False, tol=1e-3)
+clfs.append(BernoulliNB(alpha=.01))
+clfs.append(MultinomialNB(alpha=.01))
+clfs.append(KNeighborsClassifier(n_neighbors=n_neighb))
+clfs.append(RidgeClassifier(tol=1e-1))
+clfs.append(SGDClassifier(alpha=.0001, n_iter=50, penalty="l1"))
+clfs.append(SGDClassifier(alpha=.0001, n_iter=50, penalty="l2"))
+clfs.append(SGDClassifier(alpha=.0001, n_iter=50, penalty="elasticnet"))
+clfs.append(LinearSVC(loss='l2', penalty='l1', C=1000, dual=False, tol=1e-3))
+clfs.append(LinearSVC(loss='l2', penalty='l2', C=1000, dual=False, tol=1e-3))
 
-# Initialize variables for couting the average
-f1_all = 0.0
-acc_all = 0.0
-pre_all = 0.0
-rec_all = 0.0
+# Treat logistic regression specially due to requirement for array input
+clfs_reg = []
+clfs_reg.append(OneVsRestClassifier(LogisticRegression(C=1000,penalty='l1')))
+clfs_reg.append(OneVsRestClassifier(LogisticRegression(C=1000,penalty='l2')))
 
-# Test for 10 rounds using the results from 10 fold cross validations
-for train_index, test_index in kf:
-    X_train, X_test = X[train_index], X[test_index]
-    y_train, y_test = y[train_index], y[test_index]
 
-    print "Training: "
+for clf in clfs:
+
+    # Initialize variables for couting the average
+    f1_all = 0.0
+    acc_all = 0.0
+    pre_all = 0.0
+    rec_all = 0.0
+
+    # Test for 10 rounds using the results from 10 fold cross validations
+    for train_index, test_index in kf:
+
+        X_train, X_test = X[train_index], X[test_index]
+        y_train, y_test = y[train_index], y[test_index]
+
+        clf.fit(X_train, y_train)
+        pred = clf.predict(X_test)
+
+        #Scores
+        f1_score = metrics.f1_score(y_test, pred)
+        f1_all += f1_score
+        acc_score = class_metrics(y_test, pred, acc=1)
+        acc_all += acc_score
+
+        # Could also use the scikit-learn API for precision and recall
+        # pre_s = metrics.precision_score(y_test, pred)
+        # rec_s = metrics.recall_score(y_test, pred)
+        pre_score = class_metrics(y_test, pred, pre=1)
+        pre_all += pre_score
+        rec_score = class_metrics(y_test, pred, rec=1)
+        rec_all += rec_score
+
+    f1_all = f1_all/10.0
+    acc_all = acc_all/10.0
+    pre_all = pre_all/10.0
+    rec_all = rec_all/10.0
+
     print clf
-    t0 = time()
-    clf.fit(X_train, y_train)
-    train_time = time() - t0
-    print "train time: %0.3fs" % train_time
+    print "average f1-score:   %0.5f" % f1_all
+    print "average accuracy:   %0.5f" % acc_all
+    print "average precision:  %0.5f" % pre_all
+    print "averege recall:     %0.5f" % rec_all
+    print
 
-    t0 = time()
-    pred = clf.predict(X_test)
-    test_time = time() - t0
-    print "test time:  %0.3fs" % test_time
 
-    #Scores
-    f1_score = metrics.f1_score(y_test, pred)
-    f1_all += f1_score
-    print "f1-score:   %0.3f" % f1_score
-    acc_score = class_metrics(y_test, pred, acc=1)
-    acc_all += acc_score
-    print "accuracy:   %0.3f" % acc_score
+for clf in clfs_reg:
 
-    # Could also use the scikit-learn API for precision and recall
-    # pre_s = metrics.precision_score(y_test, pred)
-    # print "precision api:   %0.3f" % pre_s
-    # rec_s = metrics.recall_score(y_test, pred)
-    # print "precision api:   %0.3f" % rec_s
-    pre_score = class_metrics(y_test, pred, pre=1)
-    pre_all += pre_score
-    print "precision:   %0.3f" % pre_score
-    rec_score = class_metrics(y_test, pred, rec=1)
-    rec_all += rec_score
-    print "recall:   %0.3f" % rec_score
+    # Initialize variables for couting the average
+    f1_all = 0.0
+    acc_all = 0.0
+    pre_all = 0.0
+    rec_all = 0.0
 
-f1_all = f1_all/10.0
-acc_all = acc_all/10.0
-pre_all = pre_all/10.0
-rec_all = rec_all/10.0
+    # Test for 10 rounds using the results from 10 fold cross validations
+    for train_index, test_index in kf:
 
-print
-print "average f1-score:   %0.5f" % f1_all
-print "average accuracy:   %0.5f" % acc_all
-print "average precision:  %0.5f" % pre_all
-print "averege recall:     %0.5f" % rec_all
+        X_train, X_test = X_den[train_index], X_den[test_index]
+        y_train, y_test = y[train_index], y[test_index]
+
+        clf.fit(X_train, y_train)
+        pred = clf.predict(X_test)
+
+        #Scores
+        f1_score = metrics.f1_score(y_test, pred)
+        f1_all += f1_score
+        acc_score = class_metrics(y_test, pred, acc=1)
+        acc_all += acc_score
+
+        # Could also use the scikit-learn API for precision and recall
+        # pre_s = metrics.precision_score(y_test, pred)
+        # rec_s = metrics.recall_score(y_test, pred)
+        pre_score = class_metrics(y_test, pred, pre=1)
+        pre_all += pre_score
+        rec_score = class_metrics(y_test, pred, rec=1)
+        rec_all += rec_score
+
+    f1_all = f1_all/10.0
+    acc_all = acc_all/10.0
+    pre_all = pre_all/10.0
+    rec_all = rec_all/10.0
+
+    print clf
+    print "average f1-score:   %0.5f" % f1_all
+    print "average accuracy:   %0.5f" % acc_all
+    print "average precision:  %0.5f" % pre_all
+    print "averege recall:     %0.5f" % rec_all
+    print
