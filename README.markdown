@@ -8,7 +8,9 @@ List of Content
 **01_test_classifiers.py** - tests various classifiers available in scikit-learn.<br>
 ***02_two_layered_classifier*** - Two layered classifier, with a hard-coded example test for now.<br>
 **03_plot_randomPCA** - plots all labelled instances in 2D using PCA for dimensional reduction.<br>
-**04_multilabel** - *under construction* classification that will return multi-label if applicable on tests.<br>
+**04_plot_Isomap** - plots all labelled instances in 2D using Isomap for dimensional reduction.<br>
+**05_multilabel** - *under construction* classification that will return multi-label if applicable on tests.<br>
+**06_k_fold_cross_validation** - 10-fold CV for all possible classifiers, with averaged metrics ready (accuracy, precision, recall, f1).<br>
 
 Warning: Below are just sample text for further usage.
 ================================
