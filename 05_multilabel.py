@@ -19,12 +19,11 @@ from sklearn.linear_model import RidgeClassifier, LogisticRegression
 from sklearn.linear_model.sparse import SGDClassifier
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.naive_bayes import MultinomialNB, BernoulliNB
-from sklearn.svm.sparse import LinearSVC, OneClassSVM, SVC
+from sklearn.svm.sparse import LinearSVC, SVC
 from sklearn.utils.extmath import density
 
 from sklearn.multiclass import OneVsRestClassifier, OneVsOneClassifier
 
-from sklearn.grid_search import GridSearchCV
 from sklearn import metrics
 
 # Deaclear categories
@@ -47,13 +46,12 @@ data_train = load_files('Privacypolicy/raw', categories = categories,
 print 'Data loaded!'
 print
 
-
 y = data_train.target
 print "length of y: %d" % len(y)
-print type(y)
-print y
 
-# Transform y to one-else
+# A primary thought on implementing multi-label classifier
+# Aborted later due to functions provided by most classifiers
+# Method: Transform y to one-else and use loops to learn binary classifiers
 # y_0 = y.copy()
 # for i in range(len(y_0)):
 #       if y_0[i] == 1:
@@ -68,8 +66,9 @@ X = vectorizer.fit_transform(data_train.data)
 print "Done in %0.3fs" % (time() - t0)
 print "n_samples: %d, n_features: %d" % X.shape
 print
+# to dense array for logistic regression which does not work on sparse
+X_den = X.toarray()
 
-X_den = X.todense()
 
 # # Feature selection for the L1 dataset
 # select_chi2 = 1000
@@ -82,30 +81,7 @@ X_den = X.todense()
 # print
 
 
-# Train L1 classifier
-print "Training Classifier..."
-t0 = time()
-clf = LinearSVC(loss='l2', penalty='l2', \
-                  C=1000, dual=False, tol=1e-3)
-# clf = KNeighborsClassifier(n_neighbors=13)
-# clf = OneClassSVM(nu=0.1, kernel="rbf", gamma=0.1)
-# clf = SVC(C=1024, kernel='rbf', degree=3, gamma=0.001, probability=True)
-clf_r = RidgeClassifier(tol=1e-1)
-# clf = LogisticRegression
-# clf = MultinomialNB()
-print clf
-print clf_r
-clf.fit(X, y)
-clf_r.fit(X, y)
-print "Train time: %0.3fs" % (time() - t0)
-print
-
-# Try decision_function
-# decision = clf.decision_function(X)
-# print type(decision)
-# print
-
-# Test: Predict on new texts
+# Testset - X_new
 docs_new = ["Eli Lilly and Company complies with the U.S.-EU Safe Harbor Framework and the U.S.-Swiss Safe Harbor Framework as set forth by the U.S. Department of Commerce regarding the collection, use, and retention of personal information from European Union member countries and Switzerland. Eli Lilly and Company has certified that it adheres to the Safe Harbor Privacy Principles of notice, choice, onward transfer, security, data integrity, access, and enforcement. To learn more about the Safe Harbor program, and to view Eli Lilly and Company's certification, please visit", 
             'Through this website, you may be asked to voluntarily provide to us information that can identify or locate you, such as your name, address, telephone number, e-mail address, and other similar information ("Personal Information"). You may always refuse to provide Personal Information to us, but this may lead to our inability to provide you with certain information, products or services.',
             'We may also collect information that does not identify you ("Other Information"), such as the date and time of website session, movements across our website, and information about your browser, We do not tie Other Information to Personal Information. This Other Information may be used and stored by Lilly or its agents. Other Information we collect may include your IP Address (a number used to identify your computer on the Internet) and other information gathered through our weblogs, cookies or by other means (see below). We use Other Information to administer and update our website and for other everyday business purposes. Lilly reserves the right to maintain, update, disclose or otherwise use Other Information, without limitation.',
@@ -123,21 +99,75 @@ docs_new = ["Eli Lilly and Company complies with the U.S.-EU Safe Harbor Framewo
             'If you have any questions or comments about this Privacy Statement, please contact us by writing to:',
             ]
 X_new = vectorizer.transform(docs_new)
-# predicted = clf.predict(X_new)
-predicted = clf.predict(X_new)
+
+
+# Train classifiers
+print "Training Classifiers..."
+t0 = time()
+
+clf_nb = MultinomialNB()
+clf_lsvc = LinearSVC(loss='l2', penalty='l2', C=1000, dual=False, tol=1e-3)
+clf_svc = SVC(C=1024, kernel='rbf', degree=3, gamma=0.001, probability=True)
+clf_rdg = RidgeClassifier(tol=1e-1)
+clf_sgd = SGDClassifier(alpha=.0001, n_iter=50, penalty="l2")
+
+# Logistic regression requires OneVsRestClassifier which hides
+# its methods such as decision_function
+# It will require extra implementation efforts to use it as a candidate
+# for multilabel classification
+# clf_lgr = OneVsRestClassifier(LogisticRegression(C=1000,penalty='l1'))
+# kNN does not have decision function due to its nature
+# clf = KNeighborsClassifier(n_neighbors=13)
+
+# train
+clf_nb.fit(X, y)
+clf_lsvc.fit(X, y)
+clf_rdg.fit(X, y)
+clf_svc.fit(X, y)
+clf_sgd.fit(X, y)
+
+print "Train time: %0.3fs" % (time() - t0)
+print
+
+
+# predict use a classifier
+predicted = clf_rdg.predict(X_new)
 print predicted
 
 for doc, category in zip(docs_new, predicted):
     print '%r => %s' % (doc, data_train.target_names[int(category)])
     print
 
-# pred_prob = clf.predict_proba(X_new)
-# print pred_prob
-pred_decisio = clf.decision_function(X_new)
+
+# decision_function and predict_proba
+print clf_nb
+pred_prob = clf_nb.predict_proba(X_new)
+print pred_prob
+print
+
+print clf_lsvc
+pred_decisio = clf_lsvc.decision_function(X_new)
+print pred_decisio
+print 
+
+print clf_svc
+# SVC should have the decision_function method, but got error:
+# error - ValueError: setting an array element with a sequence
+# pred_decisio = clf_svc.decision_function(X_new)
+pred_prob = clf_svc.predict_proba(X_new)
+print pred_prob
+print
+
+print clf_rdg
+pred_decisio = clf_rdg.decision_function(X_new)
 print pred_decisio
 print
-pred_decisio = clf_r.decision_function(X_new)
-print pred_decisio
 
-#Predict
-# pred = clf.predict(X_test)
+print clf_sgd
+pred_decisio = clf_sgd.decision_function(X_new)
+# Mentioned in scikit learn's API class manual
+# that SGDClassifier should have menthod predict_proba
+# but in test, none of the three loss modes of SGD supports predict_proba
+# pred_prob = clf_sgd.predict_proba(X_new)
+print pred_decisio
+print
