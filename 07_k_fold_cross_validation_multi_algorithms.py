@@ -1,10 +1,8 @@
 """
 ======================================================
-Experiment:  # training data 
+Test classifiers using 10-fold Cross Validation
 ======================================================
-To gather the experiments results for various classifiers,
-on the metrics changes with # training data increses.
-Then plot it.
+Test classifiers using 10-fold Cross Validation
 """
 
 print __doc__
@@ -20,7 +18,7 @@ from sklearn.linear_model import RidgeClassifier, LogisticRegression
 from sklearn.linear_model.sparse import SGDClassifier
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.naive_bayes import MultinomialNB, BernoulliNB, GaussianNB
-from sklearn.svm.sparse import LinearSVC
+from sklearn.svm.sparse import LinearSVC, SVC
 from sklearn.multiclass import OneVsRestClassifier
 
 from sklearn import metrics
@@ -188,6 +186,7 @@ clfs.append(SGDClassifier(alpha=.0001, n_iter=50, penalty="l2"))
 clfs.append(SGDClassifier(alpha=.0001, n_iter=50, penalty="elasticnet"))
 clfs.append(LinearSVC(loss='l2', penalty='l1', C=1000, dual=False, tol=1e-3))
 clfs.append(LinearSVC(loss='l2', penalty='l2', C=1000, dual=False, tol=1e-3))
+clfs.append(SVC(C=1000))
 
 # Treat logistic regression specially due to requirement for array input
 clfs_reg = []
@@ -231,11 +230,13 @@ for clf in clfs:
     pre_all = pre_all/10.0
     rec_all = rec_all/10.0
 
+    # average the metrics from 10 fold
     print clf
     print "average f1-score:   %0.5f" % f1_all
-    print "average accuracy:   %0.5f" % acc_all
     print "average precision:  %0.5f" % pre_all
     print "averege recall:     %0.5f" % rec_all
+    # accuracy is not a good metrics because the sparse nature of matrix
+    # print "average accuracy:   %0.5f" % acc_all
     print
 
 
@@ -270,6 +271,7 @@ for clf in clfs_reg:
         rec_score = class_metrics(y_test, pred, rec=1)
         rec_all += rec_score
 
+    # average the metrics from 10 fold
     f1_all = f1_all/10.0
     acc_all = acc_all/10.0
     pre_all = pre_all/10.0
@@ -277,7 +279,8 @@ for clf in clfs_reg:
 
     print clf
     print "average f1-score:   %0.5f" % f1_all
-    print "average accuracy:   %0.5f" % acc_all
     print "average precision:  %0.5f" % pre_all
     print "averege recall:     %0.5f" % rec_all
+    # accuracy is not a good metrics because the sparse nature of matrix
+    # print "average accuracy:   %0.5f" % acc_all
     print
