@@ -9,8 +9,10 @@ List of Content
 ***02_two_layered_classifier*** - Two layered classifier, with a hard-coded example test for now.<br>
 **03_plot_randomPCA** - plots all labelled instances in 2D using PCA for dimensional reduction.<br>
 **04_plot_Isomap** - plots all labelled instances in 2D using Isomap for dimensional reduction.<br>
-**05_multilabel** - *under construction* classification that will return multi-label if applicable on tests.<br>
+**05_multilabel** - classification that will return multi-label if applicable on tests.<br>
 **06_k_fold_cross_validation** - 10-fold CV for all possible classifiers, with averaged metrics ready (accuracy, precision, recall, f1).<br>
+**07_k_fold_cross_validation_multi_algorithms** - 10-fold CV for all possible classifiers, with averaged metrics ready (accuracy, precision, recall, f1), iterates through all classifiers in one run.<br>
+**08_para_tunning** - tune the parameters for classifiers on the 717 annotated set.<br>
 
 Warning: Below are just sample text for further usage.
 ================================
