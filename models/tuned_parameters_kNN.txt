@@ -1,0 +1,177 @@
+======================================================
+Tuning parameters for kNN
+======================================================
+
+Loading privacy policy dataset for categories:
+['Advertising', 'CA', 'Collect', 'Cookies', 'Security', 'Share', 'SafeHarbor', '
+Truste', 'Change', 'Location', 'Children', 'Contact', 'Process', 'Retention']
+data loaded
+
+Extracting features from the training dataset using a sparse vectorizer
+done in 0.271000s
+n_samples: 717, n_features: 2625
+
+one run of grid search done in 2.553000s
+Classification report for the best estimator:
+KNeighborsClassifier(algorithm=auto, leaf_size=30, n_neighbors=13,
+           weights=uniform)
+Tuned for 'precision' with optimal value: 0.840
+
+             precision    recall  f1-score   support
+
+          0       0.80      1.00      0.89         8
+          1       0.77      0.77      0.77        22
+          2       1.00      1.00      1.00         7
+          3       1.00      1.00      1.00         6
+          4       0.75      0.62      0.68        24
+          5       1.00      0.83      0.91         6
+          6       0.83      0.88      0.86        17
+          7       1.00      1.00      1.00         4
+          8       1.00      1.00      1.00         3
+          9       1.00      1.00      1.00         3
+         10       1.00      1.00      1.00         4
+         11       0.80      0.80      0.80        10
+         12       0.79      0.85      0.81        26
+         13       1.00      1.00      1.00         4
+
+avg / total       0.84      0.84      0.84       144
+
+Grid scores:
+({'n_neighbors': 1}, 0.75365552076958464)
+({'n_neighbors': 3}, 0.79568340062715526)
+({'n_neighbors': 5}, 0.80997874256114066)
+({'n_neighbors': 7}, 0.82822706137673252)
+({'n_neighbors': 9}, 0.83768199408413224)
+({'n_neighbors': 11}, 0.836292262640565)
+({'n_neighbors': 13}, 0.85206517972999718)
+({'n_neighbors': 15}, 0.84869238231048083)
+({'n_neighbors': 17}, 0.85052965718826135)
+({'n_neighbors': 19}, 0.84832946382369101)
+({'n_neighbors': 21}, 0.8398859945249586)
+({'n_neighbors': 23}, 0.8381736749801082)
+({'n_neighbors': 25}, 0.84361750829884052)
+({'n_neighbors': 27}, 0.84984991682630628)
+({'n_neighbors': 29}, 0.85113943015403926)
+({'n_neighbors': 31}, 0.84101396245923887)
+({'n_neighbors': 33}, 0.83330038201360024)
+({'n_neighbors': 35}, 0.82905904828602206)
+({'n_neighbors': 37}, 0.83618289435691406)
+({'n_neighbors': 39}, 0.82246712709948)
+({'n_neighbors': 41}, 0.80978612884113066)
+({'n_neighbors': 43}, 0.80069211456256717)
+({'n_neighbors': 45}, 0.80175529358627273)
+({'n_neighbors': 47}, 0.79298504732814112)
+({'n_neighbors': 49}, 0.77153550535854398)
+({'n_neighbors': 51}, 0.7729660333661692)
+({'n_neighbors': 53}, 0.7644601395800743)
+({'n_neighbors': 55}, 0.75860484038582776)
+
+one run of grid search done in 2.483000s
+Classification report for the best estimator:
+KNeighborsClassifier(algorithm=auto, leaf_size=30, n_neighbors=27,
+           weights=uniform)
+Tuned for 'recall' with optimal value: 0.847
+
+             precision    recall  f1-score   support
+
+          0       0.78      0.88      0.82         8
+          1       0.83      0.86      0.84        22
+          2       1.00      1.00      1.00         7
+          3       1.00      1.00      1.00         6
+          4       0.78      0.58      0.67        24
+          5       1.00      1.00      1.00         6
+          6       0.89      0.94      0.91        17
+          7       1.00      1.00      1.00         4
+          8       1.00      1.00      1.00         3
+          9       1.00      0.33      0.50         3
+         10       1.00      1.00      1.00         4
+         11       1.00      0.80      0.89        10
+         12       0.70      0.88      0.78        26
+         13       1.00      1.00      1.00         4
+
+avg / total       0.86      0.85      0.84       144
+
+Grid scores:
+({'n_neighbors': 1}, 0.74342105263157909)
+({'n_neighbors': 3}, 0.76257309941520479)
+({'n_neighbors': 5}, 0.79049707602339181)
+({'n_neighbors': 7}, 0.80974049707602347)
+({'n_neighbors': 9}, 0.82547514619883045)
+({'n_neighbors': 11}, 0.82892909356725153)
+({'n_neighbors': 13}, 0.84460891812865502)
+({'n_neighbors': 15}, 0.84117324561403517)
+({'n_neighbors': 17}, 0.84120979532163753)
+({'n_neighbors': 19}, 0.84294590643274858)
+({'n_neighbors': 21}, 0.8376644736842106)
+({'n_neighbors': 23}, 0.83770102339181296)
+({'n_neighbors': 25}, 0.84639985380116967)
+({'n_neighbors': 27}, 0.8515899122807018)
+({'n_neighbors': 29}, 0.84804459064327498)
+({'n_neighbors': 31}, 0.84113669590643281)
+({'n_neighbors': 33}, 0.8341374269005849)
+({'n_neighbors': 35}, 0.8341374269005849)
+({'n_neighbors': 37}, 0.83940058479532176)
+({'n_neighbors': 39}, 0.82713815789473688)
+({'n_neighbors': 41}, 0.81842105263157905)
+({'n_neighbors': 43}, 0.81317616959064332)
+({'n_neighbors': 45}, 0.81312134502923972)
+({'n_neighbors': 47}, 0.80434941520467829)
+({'n_neighbors': 49}, 0.79561403508771944)
+({'n_neighbors': 51}, 0.79565058479532158)
+({'n_neighbors': 53}, 0.79040570175438596)
+({'n_neighbors': 55}, 0.7834429824561403)
+
+one run of grid search done in 2.483000s
+Classification report for the best estimator:
+KNeighborsClassifier(algorithm=auto, leaf_size=30, n_neighbors=27,
+           weights=uniform)
+Tuned for 'f1' with optimal value: 0.843
+
+             precision    recall  f1-score   support
+
+          0       0.78      0.88      0.82         8
+          1       0.83      0.86      0.84        22
+          2       1.00      1.00      1.00         7
+          3       1.00      1.00      1.00         6
+          4       0.78      0.58      0.67        24
+          5       1.00      1.00      1.00         6
+          6       0.89      0.94      0.91        17
+          7       1.00      1.00      1.00         4
+          8       1.00      1.00      1.00         3
+          9       1.00      0.33      0.50         3
+         10       1.00      1.00      1.00         4
+         11       1.00      0.80      0.89        10
+         12       0.70      0.88      0.78        26
+         13       1.00      1.00      1.00         4
+
+avg / total       0.86      0.85      0.84       144
+
+Grid scores:
+({'n_neighbors': 1}, 0.73983316810999145)
+({'n_neighbors': 3}, 0.76411428684582072)
+({'n_neighbors': 5}, 0.79061120737920554)
+({'n_neighbors': 7}, 0.80866298290787264)
+({'n_neighbors': 9}, 0.8234032950791601)
+({'n_neighbors': 11}, 0.82628147752900916)
+({'n_neighbors': 13}, 0.84223894694860135)
+({'n_neighbors': 15}, 0.8390305760230895)
+({'n_neighbors': 17}, 0.83993433288817643)
+({'n_neighbors': 19}, 0.83932309000524741)
+({'n_neighbors': 21}, 0.83154933354346783)
+({'n_neighbors': 23}, 0.83103913347531289)
+({'n_neighbors': 25}, 0.83863312499856424)
+({'n_neighbors': 27}, 0.84404618123945552)
+({'n_neighbors': 29}, 0.84198977178878809)
+({'n_neighbors': 31}, 0.83295885761904842)
+({'n_neighbors': 33}, 0.8252587699396049)
+({'n_neighbors': 35}, 0.82334228644645047)
+({'n_neighbors': 37}, 0.82914135800862321)
+({'n_neighbors': 39}, 0.81487189000999782)
+({'n_neighbors': 41}, 0.80319832730396157)
+({'n_neighbors': 43}, 0.79541717384827693)
+({'n_neighbors': 45}, 0.79546719923789644)
+({'n_neighbors': 47}, 0.78499153967935953)
+({'n_neighbors': 49}, 0.77197692696728282)
+({'n_neighbors': 51}, 0.77346571238977102)
+({'n_neighbors': 53}, 0.76677618090970423)
+({'n_neighbors': 55}, 0.75907813800096247)

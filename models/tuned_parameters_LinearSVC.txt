@@ -1,0 +1,154 @@
+======================================================
+Tuning parameters for LinearSVC
+======================================================
+
+Loading privacy policy dataset for categories:
+['Advertising', 'CA', 'Collect', 'Cookies', 'Security', 'Share', 'SafeHarbor', '
+Truste', 'Change', 'Location', 'Children', 'Contact', 'Process', 'Retention']
+data loaded
+
+Extracting features from the training dataset using a sparse vectorizer
+done in 0.275000s
+n_samples: 717, n_features: 2625
+
+one run of grid search done in 73.486000s
+Classification report for the best estimator:
+LinearSVC(C=0.5, dual=False, fit_intercept=True, intercept_scaling=1, loss=l2,
+     multi_class=False, penalty=l2, tol=0.0001)
+Tuned for 'precision' with optimal value: 0.863
+
+             precision    recall  f1-score   support
+
+          0       0.88      0.88      0.88         8
+          1       0.76      0.86      0.81        22
+          2       1.00      1.00      1.00         7
+          3       1.00      1.00      1.00         6
+          4       0.71      0.62      0.67        24
+          5       1.00      1.00      1.00         6
+          6       0.93      0.82      0.87        17
+          7       1.00      1.00      1.00         4
+          8       1.00      1.00      1.00         3
+          9       1.00      1.00      1.00         3
+         10       1.00      1.00      1.00         4
+         11       0.75      0.90      0.82        10
+         12       0.88      0.88      0.88        26
+         13       1.00      1.00      1.00         4
+
+avg / total       0.86      0.86      0.86       144
+
+Grid scores:
+({'penalty': 'l1', 'loss': 'l2', 'C': 0.125, 'dual': False}, 0.71669599203781198)
+({'penalty': 'l2', 'loss': 'l2', 'C': 0.125, 'dual': False}, 0.8710025383001202)
+({'penalty': 'l1', 'loss': 'l2', 'C': 0.5, 'dual': False}, 0.85380879400566168)
+({'penalty': 'l2', 'loss': 'l2', 'C': 0.5, 'dual': False}, 0.88248656917464585)
+({'penalty': 'l1', 'loss': 'l2', 'C': 2, 'dual': False}, 0.84642811708391563)
+({'penalty': 'l2', 'loss': 'l2', 'C': 2, 'dual': False}, 0.87969757586356956)
+({'penalty': 'l1', 'loss': 'l2', 'C': 8, 'dual': False}, 0.85242479557378137)
+({'penalty': 'l2', 'loss': 'l2', 'C': 8, 'dual': False}, 0.87515352900616794)
+({'penalty': 'l1', 'loss': 'l2', 'C': 32, 'dual': False}, 0.84018725017534535)
+({'penalty': 'l2', 'loss': 'l2', 'C': 32, 'dual': False}, 0.86916006474386998)
+({'penalty': 'l1', 'loss': 'l2', 'C': 128, 'dual': False}, 0.85042050287199233)
+({'penalty': 'l2', 'loss': 'l2', 'C': 128, 'dual': False}, 0.87067667678679761)
+({'penalty': 'l1', 'loss': 'l2', 'C': 512, 'dual': False}, 0.85324349988027592)
+({'penalty': 'l2', 'loss': 'l2', 'C': 512, 'dual': False}, 0.87205902760489917)
+({'penalty': 'l1', 'loss': 'l2', 'C': 2048, 'dual': False}, 0.83211316650146949)
+({'penalty': 'l2', 'loss': 'l2', 'C': 2048, 'dual': False}, 0.8766360729932674)
+({'penalty': 'l1', 'loss': 'l2', 'C': 8192, 'dual': False}, 0.78059118225643798)
+({'penalty': 'l2', 'loss': 'l2', 'C': 8192, 'dual': False}, 0.8766360729932674)
+({'penalty': 'l1', 'loss': 'l2', 'C': 32768, 'dual': False}, 0.72239450907673619)
+({'penalty': 'l2', 'loss': 'l2', 'C': 32768, 'dual': False}, 0.8766360729932674)
+
+
+one run of grid search done in 77.013000s
+Classification report for the best estimator:
+LinearSVC(C=0.5, dual=False, fit_intercept=True, intercept_scaling=1, loss=l2,
+     multi_class=False, penalty=l2, tol=0.0001)
+Tuned for 'recall' with optimal value: 0.861
+
+             precision    recall  f1-score   support
+
+          0       0.88      0.88      0.88         8
+          1       0.76      0.86      0.81        22
+          2       1.00      1.00      1.00         7
+          3       1.00      1.00      1.00         6
+          4       0.71      0.62      0.67        24
+          5       1.00      1.00      1.00         6
+          6       0.93      0.82      0.87        17
+          7       1.00      1.00      1.00         4
+          8       1.00      1.00      1.00         3
+          9       1.00      1.00      1.00         3
+         10       1.00      1.00      1.00         4
+         11       0.75      0.90      0.82        10
+         12       0.88      0.88      0.88        26
+         13       1.00      1.00      1.00         4
+
+avg / total       0.86      0.86      0.86       144
+
+Grid scores:
+({'penalty': 'l1', 'loss': 'l2', 'C': 0.125, 'dual': False}, 0.65782163742690059)
+({'penalty': 'l2', 'loss': 'l2', 'C': 0.125, 'dual': False}, 0.86209795321637428)
+({'penalty': 'l1', 'loss': 'l2', 'C': 0.5, 'dual': False}, 0.84459064327485389)
+({'penalty': 'l2', 'loss': 'l2', 'C': 0.5, 'dual': False}, 0.87609649122807021)
+({'penalty': 'l1', 'loss': 'l2', 'C': 2, 'dual': False}, 0.83770102339181296)
+({'penalty': 'l2', 'loss': 'l2', 'C': 2, 'dual': False}, 0.87255116959064338)
+({'penalty': 'l1', 'loss': 'l2', 'C': 8, 'dual': False}, 0.8411915204678363)
+({'penalty': 'l2', 'loss': 'l2', 'C': 8, 'dual': False}, 0.86907894736842106)
+({'penalty': 'l1', 'loss': 'l2', 'C': 32, 'dual': False}, 0.83068347953216382)
+({'penalty': 'l2', 'loss': 'l2', 'C': 32, 'dual': False}, 0.86207967836257315)
+({'penalty': 'l1', 'loss': 'l2', 'C': 128, 'dual': False}, 0.83066520467836269)
+({'penalty': 'l2', 'loss': 'l2', 'C': 128, 'dual': False}, 0.86383406432748544)
+({'penalty': 'l1', 'loss': 'l2', 'C': 512, 'dual': False}, 0.83072002923976618)
+({'penalty': 'l2', 'loss': 'l2', 'C': 512, 'dual': False}, 0.86732456140350878)
+({'penalty': 'l1', 'loss': 'l2', 'C': 2048, 'dual': False}, 0.82896564327485389)
+({'penalty': 'l2', 'loss': 'l2', 'C': 2048, 'dual': False}, 0.87083333333333335)
+({'penalty': 'l1', 'loss': 'l2', 'C': 8192, 'dual': False}, 0.77490862573099428)
+({'penalty': 'l2', 'loss': 'l2', 'C': 8192, 'dual': False}, 0.87083333333333335)
+({'penalty': 'l1', 'loss': 'l2', 'C': 32768, 'dual': False}, 0.72949561403508767)
+({'penalty': 'l2', 'loss': 'l2', 'C': 32768, 'dual': False}, 0.87083333333333335)
+
+one run of grid search done in 74.397000s
+Classification report for the best estimator:
+LinearSVC(C=0.5, dual=False, fit_intercept=True, intercept_scaling=1, loss=l2,
+     multi_class=False, penalty=l2, tol=0.0001)
+Tuned for 'f1' with optimal value: 0.860
+
+             precision    recall  f1-score   support
+
+          0       0.88      0.88      0.88         8
+          1       0.76      0.86      0.81        22
+          2       1.00      1.00      1.00         7
+          3       1.00      1.00      1.00         6
+          4       0.71      0.62      0.67        24
+          5       1.00      1.00      1.00         6
+          6       0.93      0.82      0.87        17
+          7       1.00      1.00      1.00         4
+          8       1.00      1.00      1.00         3
+          9       1.00      1.00      1.00         3
+         10       1.00      1.00      1.00         4
+         11       0.75      0.90      0.82        10
+         12       0.88      0.88      0.88        26
+         13       1.00      1.00      1.00         4
+
+avg / total       0.86      0.86      0.86       144
+
+Grid scores:
+({'penalty': 'l1', 'loss': 'l2', 'C': 0.125, 'dual': False}, 0.65264675715710418)
+({'penalty': 'l2', 'loss': 'l2', 'C': 0.125, 'dual': False}, 0.85867117612117527)
+({'penalty': 'l1', 'loss': 'l2', 'C': 0.5, 'dual': False}, 0.84289315665296016)
+({'penalty': 'l2', 'loss': 'l2', 'C': 0.5, 'dual': False}, 0.87418868127746741)
+({'penalty': 'l1', 'loss': 'l2', 'C': 2, 'dual': False}, 0.83645849687974405)
+({'penalty': 'l2', 'loss': 'l2', 'C': 2, 'dual': False}, 0.87157950752432489)
+({'penalty': 'l1', 'loss': 'l2', 'C': 8, 'dual': False}, 0.83468246503297316)
+({'penalty': 'l2', 'loss': 'l2', 'C': 8, 'dual': False}, 0.86780696270415258)
+({'penalty': 'l1', 'loss': 'l2', 'C': 32, 'dual': False}, 0.82891925414482737)
+({'penalty': 'l2', 'loss': 'l2', 'C': 32, 'dual': False}, 0.8610469686819654)
+({'penalty': 'l1', 'loss': 'l2', 'C': 128, 'dual': False}, 0.82783906421996256)
+({'penalty': 'l2', 'loss': 'l2', 'C': 128, 'dual': False}, 0.86265113647225067)
+({'penalty': 'l1', 'loss': 'l2', 'C': 512, 'dual': False}, 0.8262100176548115)
+({'penalty': 'l2', 'loss': 'l2', 'C': 512, 'dual': False}, 0.86601303759527837)
+({'penalty': 'l1', 'loss': 'l2', 'C': 2048, 'dual': False}, 0.82963010528074599)
+({'penalty': 'l2', 'loss': 'l2', 'C': 2048, 'dual': False}, 0.86972183968826167)
+({'penalty': 'l1', 'loss': 'l2', 'C': 8192, 'dual': False}, 0.75063673762924632)
+({'penalty': 'l2', 'loss': 'l2', 'C': 8192, 'dual': False}, 0.86972183968826167)
+({'penalty': 'l1', 'loss': 'l2', 'C': 32768, 'dual': False}, 0.69259521196831986)
+({'penalty': 'l2', 'loss': 'l2', 'C': 32768, 'dual': False}, 0.86972183968826167)

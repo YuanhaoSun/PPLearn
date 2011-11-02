@@ -1,0 +1,242 @@
+======================================================
+Tuning parameters for Ridge -- loose
+======================================================
+
+Loading privacy policy dataset for categories:
+['Advertising', 'CA', 'Collect', 'Cookies', 'Security', 'Share', 'SafeHarbor', '
+Truste', 'Change', 'Location', 'Children', 'Contact', 'Process', 'Retention']
+data loaded
+
+Extracting features from the training dataset using a sparse vectorizer
+done in 0.271000s
+n_samples: 717, n_features: 2625
+
+one run of grid search done in 12.319000s
+Classification report for the best estimator:
+RidgeClassifier(alpha=2, fit_intercept=True, normalize=False,
+        overwrite_X=False, tol=0.001)
+Tuned for 'precision' with optimal value: 0.855
+
+             precision    recall  f1-score   support
+
+          0       0.88      0.88      0.88         8
+          1       0.73      0.86      0.79        22
+          2       1.00      1.00      1.00         7
+          3       1.00      1.00      1.00         6
+          4       0.70      0.58      0.64        24
+          5       1.00      1.00      1.00         6
+          6       0.93      0.82      0.87        17
+          7       1.00      1.00      1.00         4
+          8       1.00      1.00      1.00         3
+          9       1.00      1.00      1.00         3
+         10       1.00      1.00      1.00         4
+         11       0.82      0.90      0.86        10
+         12       0.85      0.88      0.87        26
+         13       1.00      1.00      1.00         4
+
+avg / total       0.85      0.85      0.85       144
+
+Grid scores:
+({'alpha': 0.0078125}, 0.85019534921306239)
+({'alpha': 0.03125}, 0.85936216963770762)
+({'alpha': 0.125}, 0.87408102152204903)
+({'alpha': 0.5}, 0.88356503426372934)
+({'alpha': 1}, 0.88545692437700585)
+({'alpha': 2}, 0.88864678396344032)
+({'alpha': 8}, 0.87554201282430999)
+({'alpha': 32}, 0.85669266876189198)
+({'alpha': 128}, 0.83591877975782636)
+
+one run of grid search done in 12.413000s
+Classification report for the best estimator:
+RidgeClassifier(alpha=2, fit_intercept=True, normalize=False,
+        overwrite_X=False, tol=0.001)
+Tuned for 'recall' with optimal value: 0.854
+
+             precision    recall  f1-score   support
+
+          0       0.88      0.88      0.88         8
+          1       0.73      0.86      0.79        22
+          2       1.00      1.00      1.00         7
+          3       1.00      1.00      1.00         6
+          4       0.70      0.58      0.64        24
+          5       1.00      1.00      1.00         6
+          6       0.93      0.82      0.87        17
+          7       1.00      1.00      1.00         4
+          8       1.00      1.00      1.00         3
+          9       1.00      1.00      1.00         3
+         10       1.00      1.00      1.00         4
+         11       0.82      0.90      0.86        10
+         12       0.85      0.88      0.87        26
+         13       1.00      1.00      1.00         4
+
+avg / total       0.85      0.85      0.85       144
+
+Grid scores:
+({'alpha': 0.0078125}, 0.83938230994152052)
+({'alpha': 0.03125}, 0.84987207602339188)
+({'alpha': 0.125}, 0.86385233918128657)
+({'alpha': 0.5}, 0.877796052631579)
+({'alpha': 1}, 0.87955043859649129)
+({'alpha': 2}, 0.88304093567251463)
+({'alpha': 8}, 0.86734283625731001)
+({'alpha': 32}, 0.84294590643274858)
+({'alpha': 128}, 0.82023026315789482)
+
+one run of grid search done in 12.318000s
+Classification report for the best estimator:
+RidgeClassifier(alpha=2, fit_intercept=True, normalize=False,
+        overwrite_X=False, tol=0.001)
+Tuned for 'f1' with optimal value: 0.852
+
+             precision    recall  f1-score   support
+
+          0       0.88      0.88      0.88         8
+          1       0.73      0.86      0.79        22
+          2       1.00      1.00      1.00         7
+          3       1.00      1.00      1.00         6
+          4       0.70      0.58      0.64        24
+          5       1.00      1.00      1.00         6
+          6       0.93      0.82      0.87        17
+          7       1.00      1.00      1.00         4
+          8       1.00      1.00      1.00         3
+          9       1.00      1.00      1.00         3
+         10       1.00      1.00      1.00         4
+         11       0.82      0.90      0.86        10
+         12       0.85      0.88      0.87        26
+         13       1.00      1.00      1.00         4
+
+avg / total       0.85      0.85      0.85       144
+
+Grid scores:
+({'alpha': 0.0078125}, 0.83712271895877066)
+({'alpha': 0.03125}, 0.84935683319967192)
+({'alpha': 0.125}, 0.86355224221481064)
+({'alpha': 0.5}, 0.87646035525950716)
+({'alpha': 1}, 0.87844850338411284)
+({'alpha': 2}, 0.88183661910545574)
+({'alpha': 8}, 0.86447250592069858)
+({'alpha': 32}, 0.83881303286566211)
+({'alpha': 128}, 0.81227929544026511)
+
+
+======================================================
+Tuning parameters for Ridge -- fine
+======================================================
+
+Loading privacy policy dataset for categories:
+['Advertising', 'CA', 'Collect', 'Cookies', 'Security', 'Share', 'SafeHarbor', '
+Truste', 'Change', 'Location', 'Children', 'Contact', 'Process', 'Retention']
+data loaded
+
+Extracting features from the training dataset using a sparse vectorizer
+done in 0.271000s
+n_samples: 717, n_features: 2625
+
+one run of grid search done in 7.718000s
+Classification report for the best estimator:
+RidgeClassifier(alpha=1.75, fit_intercept=True, normalize=False,
+        overwrite_X=False, tol=0.001)
+Tuned for 'precision' with optimal value: 0.869
+
+             precision    recall  f1-score   support
+
+          0       0.88      0.88      0.88         8
+          1       0.77      0.91      0.83        22
+          2       1.00      1.00      1.00         7
+          3       1.00      1.00      1.00         6
+          4       0.71      0.62      0.67        24
+          5       1.00      1.00      1.00         6
+          6       0.93      0.82      0.87        17
+          7       1.00      1.00      1.00         4
+          8       1.00      1.00      1.00         3
+          9       1.00      1.00      1.00         3
+         10       1.00      1.00      1.00         4
+         11       0.82      0.90      0.86        10
+         12       0.88      0.88      0.88        26
+         13       1.00      1.00      1.00         4
+
+avg / total       0.87      0.87      0.87       144
+
+Grid scores:
+({'alpha': 1}, 0.88545692437700585)
+({'alpha': 1.25}, 0.8813934710604564)
+({'alpha': 1.5}, 0.88699136336065143)
+({'alpha': 1.75}, 0.88864678396344032)
+({'alpha': 2}, 0.88864678396344032)
+({'alpha': 2.25}, 0.88353864324126452)
+({'alpha': 2.5}, 0.88102536560443012)
+({'alpha': 2.75}, 0.88102536560443012)
+({'alpha': 3}, 0.88032104068957906)
+
+one run of grid search done in 7.667000s
+Classification report for the best estimator:
+RidgeClassifier(alpha=1.75, fit_intercept=True, normalize=False,
+        overwrite_X=False, tol=0.001)
+Tuned for 'recall' with optimal value: 0.868
+
+             precision    recall  f1-score   support
+
+          0       0.88      0.88      0.88         8
+          1       0.77      0.91      0.83        22
+          2       1.00      1.00      1.00         7
+          3       1.00      1.00      1.00         6
+          4       0.71      0.62      0.67        24
+          5       1.00      1.00      1.00         6
+          6       0.93      0.82      0.87        17
+          7       1.00      1.00      1.00         4
+          8       1.00      1.00      1.00         3
+          9       1.00      1.00      1.00         3
+         10       1.00      1.00      1.00         4
+         11       0.82      0.90      0.86        10
+         12       0.88      0.88      0.88        26
+         13       1.00      1.00      1.00         4
+
+avg / total       0.87      0.87      0.87       144
+
+Grid scores:
+({'alpha': 1}, 0.87955043859649129)
+({'alpha': 1.25}, 0.87604166666666672)
+({'alpha': 1.5}, 0.88128654970760234)
+({'alpha': 1.75}, 0.88304093567251463)
+({'alpha': 2}, 0.88304093567251463)
+({'alpha': 2.25}, 0.87955043859649129)
+({'alpha': 2.5}, 0.87607821637426908)
+({'alpha': 2.75}, 0.87607821637426908)
+({'alpha': 3}, 0.87607821637426908)
+
+one run of grid search done in 7.708000s
+Classification report for the best estimator:
+RidgeClassifier(alpha=1.75, fit_intercept=True, normalize=False,
+        overwrite_X=False, tol=0.001)
+Tuned for 'f1' with optimal value: 0.867
+
+             precision    recall  f1-score   support
+
+          0       0.88      0.88      0.88         8
+          1       0.77      0.91      0.83        22
+          2       1.00      1.00      1.00         7
+          3       1.00      1.00      1.00         6
+          4       0.71      0.62      0.67        24
+          5       1.00      1.00      1.00         6
+          6       0.93      0.82      0.87        17
+          7       1.00      1.00      1.00         4
+          8       1.00      1.00      1.00         3
+          9       1.00      1.00      1.00         3
+         10       1.00      1.00      1.00         4
+         11       0.82      0.90      0.86        10
+         12       0.88      0.88      0.88        26
+         13       1.00      1.00      1.00         4
+
+avg / total       0.87      0.87      0.87       144
+
+Grid scores:
+({'alpha': 1}, 0.87844850338411284)
+({'alpha': 1.25}, 0.87481477885338776)
+({'alpha': 1.5}, 0.88012624999270972)
+({'alpha': 1.75}, 0.88183661910545574)
+({'alpha': 2}, 0.88183661910545574)
+({'alpha': 2.25}, 0.87748042195643539)
+({'alpha': 2.5}, 0.87381140578741923)
+({'alpha': 2.75}, 0.87381140578741923)
+({'alpha': 3}, 0.87395877649506171)
