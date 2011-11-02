@@ -5,26 +5,54 @@ Classification - Multilabel
 Implementing the multilabel classifiers
 """
 
+print __doc__
+
 import logging
 import numpy as np
-from operator import itemgetter
-from optparse import OptionParser
 import sys
 from time import time
+
+from operator import itemgetter
 
 from sklearn.datasets import load_files
 from sklearn.feature_extraction.text import Vectorizer
 from sklearn.feature_selection import SelectKBest, chi2
+
 from sklearn.linear_model import RidgeClassifier, LogisticRegression
 from sklearn.linear_model.sparse import SGDClassifier
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.naive_bayes import MultinomialNB, BernoulliNB
 from sklearn.svm.sparse import LinearSVC, SVC
-from sklearn.utils.extmath import density
-
 from sklearn.multiclass import OneVsRestClassifier, OneVsOneClassifier
 
-from sklearn import metrics
+
+# Cutomized multi-label filtering function
+# given a decision_function and threshold, select all items > threshold
+def label_filtering(decision_function, threshold=0):
+
+    filtered_decision_function = []
+
+    for decision_item in decision_function:
+
+        # transfer to tuple -- (#, score)
+        # '#' is for future reference of label
+        decision_item_num = []
+        for i in range(len(decision_item)):
+            decision_item_num.append((decision_item[i], i))
+
+        # sort base on score. # will not lost
+        decision_item_sorted =  sorted(decision_item_num)
+        decision_item_sorted.reverse()
+
+        # filter by threshold
+        # using paradigm -- li = [ x for x in li if condition(x)]
+        decision_item_filtered = [ x for x in decision_item_sorted if x[0]>threshold ]
+
+        # append this item back to the filtered decision function
+        filtered_decision_function.append(decision_item_filtered)
+
+    return filtered_decision_function
+
 
 # Deaclear categories
 # categories = ['SafeHarbor','Truste', 'Change', 'Location', 'Children', 'Contact', 
@@ -34,10 +62,8 @@ categories = ['Advertising','CA', 'Collect', 'Cookies']
 #             'SafeHarbor','Truste', 'Change', 'Location', 'Children', 'Contact', 
 #             'Process', 'Retention']
 
-print __doc__
-
 print '# categories: %d' % len(categories)
-
+print
 
 # Load all training datasets
 print "Loading privacy policy datasets..."
@@ -48,6 +74,12 @@ print
 
 y = data_train.target
 print "length of y: %d" % len(y)
+print
+
+# print category names and number
+for i in range(len(data_train.target_names)):
+      print i, data_train.target_names[i]
+
 
 # A primary thought on implementing multi-label classifier
 # Aborted later due to functions provided by most classifiers
@@ -70,7 +102,7 @@ print
 X_den = X.toarray()
 
 
-# # Feature selection for the L1 dataset
+# # Feature selection
 # select_chi2 = 1000
 # print ("Extracting %d best features by a chi-squared test" % select_chi2)
 # t0 = time()
@@ -130,15 +162,35 @@ print "Train time: %0.3fs" % (time() - t0)
 print
 
 
-# predict use a classifier
-predicted = clf_rdg.predict(X_new)
-print predicted
+# # predict use a classifier
+# predicted = clf_rdg.predict(X_new)
+# for doc, category in zip(docs_new, predicted):
+#     print '%r => %s' % (doc, data_train.target_names[int(category)])
+#     print
 
-for doc, category in zip(docs_new, predicted):
-    print '%r => %s' % (doc, data_train.target_names[int(category)])
+
+####################################
+# Multi-label prediction using Ridge
+# decision_function
+print clf_rdg
+pred_decision = clf_rdg.decision_function(X_new)
+print pred_decision
+print
+
+# filtering using threshold
+pred_decision_filtered = label_filtering(pred_decision, 0.1)
+print pred_decision_filtered
+print
+
+# predict and print
+for doc, labels in zip(docs_new, pred_decision_filtered):
+    print doc
+    for label in labels:
+            print data_train.target_names[label[1]], label[0]
     print
 
 
+#####################################
 # decision_function and predict_proba
 print clf_nb
 pred_prob = clf_nb.predict_proba(X_new)
@@ -146,28 +198,23 @@ print pred_prob
 print
 
 print clf_lsvc
-pred_decisio = clf_lsvc.decision_function(X_new)
-print pred_decisio
+pred_decision = clf_lsvc.decision_function(X_new)
+print pred_decision
 print 
 
 print clf_svc
 # SVC should have the decision_function method, but got error:
 # error - ValueError: setting an array element with a sequence
-# pred_decisio = clf_svc.decision_function(X_new)
+# pred_decision = clf_svc.decision_function(X_new)
 pred_prob = clf_svc.predict_proba(X_new)
 print pred_prob
 print
 
-print clf_rdg
-pred_decisio = clf_rdg.decision_function(X_new)
-print pred_decisio
-print
-
 print clf_sgd
-pred_decisio = clf_sgd.decision_function(X_new)
+pred_decision = clf_sgd.decision_function(X_new)
 # Mentioned in scikit learn's API class manual
 # that SGDClassifier should have menthod predict_proba
 # but in test, none of the three loss modes of SGD supports predict_proba
 # pred_prob = clf_sgd.predict_proba(X_new)
-print pred_decisio
+print pred_decision
 print
