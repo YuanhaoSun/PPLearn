@@ -57,8 +57,11 @@ print "done in %fs" % (time() - t0)
 print "n_samples: %d, n_features: %d" % (n_samples, n_features)
 print
 
-
 # Save models
+joblib.dump(vectorizer, 'models/vectorizer.pkl')
+print 'vectorizer saved'
+print
+
 clf = MultinomialNB(alpha=.01)
 clf.fit(X, y)
 joblib.dump(clf, 'models/classifier_MultinomialNB.pkl')
