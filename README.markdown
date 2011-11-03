@@ -14,6 +14,7 @@ List of Content
 **07_k_fold_cross_validation_multi_algorithms** - 10-fold CV for all possible classifiers, with averaged metrics ready (accuracy, precision, recall, f1), iterates through all classifiers in one run.<br>
 **08_para_tunning** - tune the parameters for classifiers on the 717 annotated set.<br>
 **09_save_classication_models** - used to save the models.<br>
+**10_grading_classify** - grading coverage of a given privacy policy, based on the results from Ridge classifier.<br>
 
 Warning: Below are just sample text for further usage.
 ================================
