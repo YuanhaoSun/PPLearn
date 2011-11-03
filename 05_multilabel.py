@@ -34,7 +34,7 @@ def label_filtering(decision_function, threshold=0):
 
     for decision_item in decision_function:
 
-        # transfer to tuple -- (#, score)
+        # transfer decision_function to tuple -- (#, score)
         # '#' is for future reference of label
         decision_item_num = []
         for i in range(len(decision_item)):
@@ -129,6 +129,14 @@ docs_new = ["Eli Lilly and Company complies with the U.S.-EU Safe Harbor Framewo
             'As a convenience to our visitors, this Website currently contains links to a number of sites owned and operated by third parties that we believe may offer useful information. The policies and procedures we describe here do not apply to those sites. Lilly is not responsible for the collection or use of Personal Information or Other Information at any third party sites. Therefore, Lilly disclaims any liability for any third party use of Personal Information or Other Information obtained through using the third party web site. We suggest contacting those sites directly for information on their privacy, security, data collection, and distribution policies.',
             'We may update this Privacy Statement from time to time. When we do update it, for your convenience, we will make the updated statement available on this page. We will always handle your Personal Information in accordance with the Privacy Statement in effect at the time it was collected. We will not make any materially different use or new disclosure of your Personal Information unless we notify you and give you an opportunity to object',
             'If you have any questions or comments about this Privacy Statement, please contact us by writing to:',
+            "Greece's leaders scrambled to restore political stability in the country and preserve it's euro membership, killing a controversial plan for a referendum on Greece's latest bailout that has roiled global markets.",
+            "After being flooded with calls, faxes and emails calling for action, a Texas judicial panel is investigating an internet video that shows a judge beating his teenage daughter with a belt.",
+            "Apple has acknowledged some customers drain their batteries unusually quickly when the use its new iOS 5 operating system on the iPhone 4S or other devices.",
+            "A rift has formed in the shelf of floating ice in front of the Pine Island Glacier (PIG). The crack in the PIG runs for almost 30km (20 miles), is 60m (200ft) deep and is growing every day.",
+            "Saber-toothed squirrel: With its superlong fangs, long snout and large eyes, the mouse-size animal bears an oddly striking resemblance to the fictional saber-toothed squirrels depicted in the computer-animated 'Ice Age' films, scientists added.",
+            "Occupy Wall Street supporters who staged rallies that shut down the nation's fifth-busiest port during a day of protests condemned on Thursday the demonstrators who clashed with police in the latest flare-up of violence in Oakland.",
+            "An Afghan police officer walks at the scene of a suicide attack in Herat, west of Kabul, Afghanistan. A suicide car bomb struck the compound of a NATO contractor company in western Afghanistan while other heavily-armed insurgents",
+            "Two stoners will probably have trouble stealing the loot from a group of thieves at the box office. Tower Heist, a comedy starring Eddie Murphy and Ben Stiller about a bunch of crooks attempting to pull off a robbery, is poised to run away with the",
             ]
 X_new = vectorizer.transform(docs_new)
 
