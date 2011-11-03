@@ -184,7 +184,8 @@ print "Train time: %0.3fs" % (time() - t0)
 print
 
 
-# # predict use a classifier
+# # predict by simply apply the classifier
+# # this will not use the multi-label threshold
 # predicted = clf_rdg.predict(X_new)
 # for doc, category in zip(docs_new, predicted):
 #     print '%r => %s' % (doc, data_train.target_names[int(category)])
@@ -200,7 +201,7 @@ print pred_decision
 print
 
 # filtering using threshold
-pred_decision_filtered = label_filtering(pred_decision, 0.1)
+pred_decision_filtered = label_filtering(pred_decision, 0.2)
 print pred_decision_filtered
 print
 
