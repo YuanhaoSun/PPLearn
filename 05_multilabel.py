@@ -34,7 +34,7 @@ def label_filtering(decision_function, threshold=0):
 
     for decision_item in decision_function:
 
-        # transfer decision_function to tuple -- (#, score)
+        # transfer decision_function to tuple -- (score, #)
         # '#' is for future reference of label
         decision_item_num = []
         for i in range(len(decision_item)):
@@ -209,6 +209,7 @@ print
 for doc, labels in zip(docs_new, pred_decision_filtered):
     print doc
     for label in labels:
+            # label[0]: score; label[1]: #
             print data_train.target_names[label[1]], label[0]
     print
 
