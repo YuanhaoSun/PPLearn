@@ -57,10 +57,10 @@ def label_filtering(decision_function, threshold=0):
 # Deaclear categories
 # categories = ['SafeHarbor','Truste', 'Change', 'Location', 'Children', 'Contact', 
 #             'Process', 'Retention']
-categories = ['Advertising','CA', 'Collect', 'Cookies']
-# categories = ['Advertising','CA', 'Collect', 'Cookies', 'Security', 'Share', 
-#             'SafeHarbor','Truste', 'Change', 'Location', 'Children', 'Contact', 
-#             'Process', 'Retention']
+# categories = ['Advertising','CA', 'Collect', 'Cookies']
+categories = ['Advertising','CA', 'Collect', 'Cookies', 'Security', 'Share', 
+            'SafeHarbor','Truste', 'Change', 'Location', 'Children', 'Contact', 
+            'Process', 'Retention']
 
 print '# categories: %d' % len(categories)
 print
@@ -198,31 +198,31 @@ for doc, labels in zip(docs_new, pred_decision_filtered):
     print
 
 
-#####################################
-# decision_function and predict_proba
-print clf_nb
-pred_prob = clf_nb.predict_proba(X_new)
-print pred_prob
-print
+# #####################################
+# # decision_function and predict_proba
+# print clf_nb
+# pred_prob = clf_nb.predict_proba(X_new)
+# print pred_prob
+# print
 
-print clf_lsvc
-pred_decision = clf_lsvc.decision_function(X_new)
-print pred_decision
-print 
+# print clf_lsvc
+# pred_decision = clf_lsvc.decision_function(X_new)
+# print pred_decision
+# print 
 
-print clf_svc
-# SVC should have the decision_function method, but got error:
-# error - ValueError: setting an array element with a sequence
-# pred_decision = clf_svc.decision_function(X_new)
-pred_prob = clf_svc.predict_proba(X_new)
-print pred_prob
-print
+# print clf_svc
+# # SVC should have the decision_function method, but got error:
+# # error - ValueError: setting an array element with a sequence
+# # pred_decision = clf_svc.decision_function(X_new)
+# pred_prob = clf_svc.predict_proba(X_new)
+# print pred_prob
+# print
 
-print clf_sgd
-pred_decision = clf_sgd.decision_function(X_new)
-# Mentioned in scikit learn's API class manual
-# that SGDClassifier should have menthod predict_proba
-# but in test, none of the three loss modes of SGD supports predict_proba
-# pred_prob = clf_sgd.predict_proba(X_new)
-print pred_decision
-print
+# print clf_sgd
+# pred_decision = clf_sgd.decision_function(X_new)
+# # Mentioned in scikit learn's API class manual
+# # that SGDClassifier should have menthod predict_proba
+# # but in test, none of the three loss modes of SGD supports predict_proba
+# # pred_prob = clf_sgd.predict_proba(X_new)
+# print pred_decision
+# print
