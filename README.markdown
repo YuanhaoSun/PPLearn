@@ -15,6 +15,7 @@ List of Content
 **08_para_tunning** - tune the parameters for classifiers on the 717 annotated set.<br>
 **09_save_classication_models** - used to save the models.<br>
 **10_grading_classify** - grading coverage of a given privacy policy, based on the results from Ridge classifier.<br>
+**11_distinguish_nonpp** - classifier that can distinguish if a paragraph is privacy policy paragraph or not -- currently, only one label is shown if a paragraph is PP.<br>
 
 Warning: Below are just sample text for further usage.
 ================================
