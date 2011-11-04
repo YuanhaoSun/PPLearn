@@ -12,6 +12,7 @@ from sklearn.feature_extraction.text import Vectorizer
 from sklearn.datasets import load_files
 from sklearn.externals import joblib
 
+from utils.html2txt import Html2txtConverter 
 
 ####################################################################
 # Cutomized grading scheme
@@ -218,21 +219,28 @@ vectorizer = joblib.load('models/vectorizer.pkl')
 #             "An Afghan police officer walks at the scene of a suicide attack in Herat, west of Kabul, Afghanistan. A suicide car bomb struck the compound of a NATO contractor company in western Afghanistan while other heavily-armed insurgents",
 #             "Two stoners will probably have trouble stealing the loot from a group of thieves at the box office. Tower Heist, a comedy starring Eddie Murphy and Ben Stiller about a bunch of crooks attempting to pull off a robbery, is poised to run away with the",
 #             ]
-docs_new = [
-"This website is for your general information and use only. It is subject to change without notice. All availability times and images are provided as a guide, we cannot be held liable if it takes a little longer to make or if it differs slightly from the image as all items are handmade, and so will not look exact each time.",
-"We reserve the right to change the prices of items at any time. All prices on the website are in UK Pounds Sterling.",
-"Please read the following explanation for the information collected and how it is used, how it is safeguarded and how to contact us if you have any concerns regarding our Privacy Policy.",
-"The following information is collected from shoppers as part of the order process: Personal name, Shipping/Billing Address, Email Address.",
-"Your name and shipping address are only used in order to ship your items to you.",
-"Email addresses are used in order to contact you regarding an order you have placed with us. This may involve the following: confirmation of your order, informing you of shipment and/or any additional information about your order. ",
-"You will not be contacted for reason not relating to your order.",
-"You're email address will only be used for the mailing list if you have chosen to subscribe either via the mailing list facilty on the webiste or in person. If you ever wish to unsubscribe from the mailing list please use the 'unsubscribe' link provided in every email or contact us. You're email address will never been forwarded to third parties.",
-"Personal names, shipping addresses, and email addresses are never used for other purposes or shared with anyone else.",
-"All transactions are done through Paypal which keeps your credit/debit card information private. Thus, credit/debit card numbers are never made known to us.",
-"Please do not hesitate to contact us should you have any queries regarding our Privacy Policy.",
-]
-X_new = vectorizer.transform(docs_new)
+# docs_new = [
+# "This website is for your general information and use only. It is subject to change without notice. All availability times and images are provided as a guide, we cannot be held liable if it takes a little longer to make or if it differs slightly from the image as all items are handmade, and so will not look exact each time.",
+# "We reserve the right to change the prices of items at any time. All prices on the website are in UK Pounds Sterling.",
+# "Please read the following explanation for the information collected and how it is used, how it is safeguarded and how to contact us if you have any concerns regarding our Privacy Policy.",
+# "The following information is collected from shoppers as part of the order process: Personal name, Shipping/Billing Address, Email Address.",
+# "Your name and shipping address are only used in order to ship your items to you.",
+# "Email addresses are used in order to contact you regarding an order you have placed with us. This may involve the following: confirmation of your order, informing you of shipment and/or any additional information about your order. ",
+# "You will not be contacted for reason not relating to your order.",
+# "You're email address will only be used for the mailing list if you have chosen to subscribe either via the mailing list facilty on the webiste or in person. If you ever wish to unsubscribe from the mailing list please use the 'unsubscribe' link provided in every email or contact us. You're email address will never been forwarded to third parties.",
+# "Personal names, shipping addresses, and email addresses are never used for other purposes or shared with anyone else.",
+# "All transactions are done through Paypal which keeps your credit/debit card information private. Thus, credit/debit card numbers are never made known to us.",
+# "Please do not hesitate to contact us should you have any queries regarding our Privacy Policy.",
+# ]
 
+# instead of using a fixed list of paragraphs, we now use utils.html2txt
+# to open url and get back a list of paragraphs
+# link = 'https://cms.paypal.com/us/cgi-bin/?cmd=_render-content&content_ID=ua/Privacy_print'
+link = 'http://www.lilly.com/privacy/Pages/default.aspx'
+html_converter = Html2txtConverter(url=link, length_threshold=150)
+docs_new = html_converter.get_paragraphs()
+
+X_new = vectorizer.transform(docs_new)
 
 ####################################################
 # Predict
