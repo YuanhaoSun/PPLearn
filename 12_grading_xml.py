@@ -205,7 +205,8 @@ vectorizer = joblib.load('models/vectorizer.pkl')
 # to open url and get back a list of paragraphs
 # link = 'https://cms.paypal.com/us/cgi-bin/?cmd=_render-content&content_ID=ua/Privacy_print'
 # link = 'http://www.lilly.com/privacy/Pages/default.aspx'
-link = 'http://www.google.com/privacy/privacy-policy.html'
+# link = 'http://www.google.com/privacy/privacy-policy.html'
+link = 'http://www.apple.com/privacy/'
 
 # get title of the webpage
 htmltree = parse(urlopen(link))
@@ -307,10 +308,20 @@ for category in covered_list:
     # for names of paragraph tags
     i = 1
     for doc, label in zip(docs_new, predicted):
-        if data_train.target_names[label[1]] == category:
-            name = 'paragraph' + str(i)
-            w.element(name, doc)
-            i += 1
+        # handle all categories except unidentified
+        # because unidentified is not in the data_train.target_names[] list
+        if label[1] != 99:
+            if data_train.target_names[label[1]] == category:
+                name = 'paragraph' + str(i)
+                w.element(name, doc)
+                i += 1
+        # handle the exception of unidentified
+        # something is wrong with unidentified, need to debug
+        else:
+            if 'Unidentified' == category:
+                name = 'paragraph' + str(i)
+                w.element(name, doc)
+                i += 1
     w.end()
 
 w.close(html)
