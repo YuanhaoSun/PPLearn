@@ -14,6 +14,8 @@ from sklearn.datasets import load_files
 from sklearn.feature_extraction.text import Vectorizer
 from sklearn.preprocessing import Normalizer
 
+from sklearn.feature_selection import SelectKBest, chi2
+
 from sklearn.linear_model import RidgeClassifier, LogisticRegression
 from sklearn.linear_model.sparse import SGDClassifier
 from sklearn.neighbors import KNeighborsClassifier
@@ -136,6 +138,18 @@ vectorizer = Vectorizer(max_features=10000)
 X = vectorizer.fit_transform(data_set.data)
 X = Normalizer(norm="l2", copy=False).transform(X)
 
+
+# # Feature selection
+# select_chi2 = 1000
+# print ("Extracting %d best features by a chi-squared test" % select_chi2)
+# t0 = time()
+# ch2 = SelectKBest(chi2, k = select_chi2)
+# X = ch2.fit_transform(X, y)
+# print "Done in %fs" % (time() - t0)
+# print "L1:      n_samples: %d, n_features: %d" % X.shape
+# print
+
+
 # X = X.todense()
 X_den = X.toarray()
 
@@ -214,7 +228,10 @@ for clf in clfs:
         #Scores
         f1_score = metrics.f1_score(y_test, pred)
         f1_all += f1_score
-        acc_score = class_metrics(y_test, pred, acc=1)
+        
+        # change the calculateion of accuracy
+        # acc_score = class_metrics(y_test, pred, acc=1)
+        acc_score  = np.mean(pred.ravel() == y_test.ravel()) * 100
         acc_all += acc_score
 
         # Could also use the scikit-learn API for precision and recall
@@ -235,7 +252,9 @@ for clf in clfs:
     print "average f1-score:   %0.5f" % f1_all
     print "average precision:  %0.5f" % pre_all
     print "averege recall:     %0.5f" % rec_all
-    # accuracy is not a good metrics because the sparse nature of matrix
+    # changed accuracy calculation
+    # NOT APPLICABLE any more: accuracy is not a good metrics
+    #                   because the sparse nature of matrix
     # print "average accuracy:   %0.5f" % acc_all
     print
 
@@ -260,8 +279,12 @@ for clf in clfs_reg:
         #Scores
         f1_score = metrics.f1_score(y_test, pred)
         f1_all += f1_score
-        acc_score = class_metrics(y_test, pred, acc=1)
+
+        # change the calculateion of accuracy
+        # acc_score = class_metrics(y_test, pred, acc=1)
+        acc_score  = np.mean(pred.ravel() == y_test.ravel()) * 100
         acc_all += acc_score
+        
 
         # Could also use the scikit-learn API for precision and recall
         # pre_s = metrics.precision_score(y_test, pred)
@@ -281,6 +304,8 @@ for clf in clfs_reg:
     print "average f1-score:   %0.5f" % f1_all
     print "average precision:  %0.5f" % pre_all
     print "averege recall:     %0.5f" % rec_all
-    # accuracy is not a good metrics because the sparse nature of matrix
+    # changed accuracy calculation
+    # NOT APPLICABLE any more: accuracy is not a good metrics
+    #                   because the sparse nature of matrix
     # print "average accuracy:   %0.5f" % acc_all
     print
