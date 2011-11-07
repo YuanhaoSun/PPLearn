@@ -270,7 +270,7 @@ for doc, label in zip(docs_new, predicted):
     print doc
     # deal with the signal '99' aka 'no label' aka 'this paragraph is not privacy policy'
     if label[1] == 99:
-        print 'Not a privacy policy'
+        print 'Unidentified'
     else:
         print data_train.target_names[label[1]], label[0]
     print
@@ -291,6 +291,16 @@ print predicted_cate
 # get grading result -- (grade, [covered topics])
 result = grade_privacypolicy(predicted_cate, standard_cate_names)
 
+# decide which topics are not covered
+full_cate_list = data_train.target_names
+full_cate_list.append('Unidentified')
+full_cate_set = set(full_cate_list)
+covered_set = set(result[1])
+uncovered_cate = list(full_cate_set.difference(covered_set))
+
+
 print 'Grade: %.1f' % result[0]
 print 'Covers:'
 print result[1]
+print 'Uncovers:'
+print uncovered_cate
