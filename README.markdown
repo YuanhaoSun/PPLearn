@@ -21,6 +21,8 @@ List of Content
 **13_em_gmm** - semi-supervised classification using EM.<br>
 **14_feature_selection** - running tests on chi2 feature select (100,2500,100) for classifiers and then save the results in .csv files.<br>
 
+**15_grading_naive** - implement the Chrome naive grader in Python.<br>
+
 Warning: Below are just sample text for further usage.
 ================================
 
