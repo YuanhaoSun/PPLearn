@@ -107,7 +107,8 @@ train, test = iter(StratifiedKFold(y, 10, indices=True)).next()
 scores = [
     ('precision', metrics.precision_score),
     ('recall', metrics.recall_score),
-    ('f1', metrics.f1_score)
+    ('f1', metrics.f1_score),
+    ('accuracy', metrics.zero_one_score)
 ]
 
 # carry out grid search with CV
