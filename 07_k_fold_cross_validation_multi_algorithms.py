@@ -16,6 +16,7 @@ from sklearn.preprocessing import Normalizer
 
 from sklearn.feature_selection import SelectKBest, chi2
 
+from sklearn.tree import DecisionTreeClassifier
 from sklearn.linear_model import RidgeClassifier, LogisticRegression
 from sklearn.linear_model.sparse import SGDClassifier
 from sklearn.neighbors import KNeighborsClassifier
@@ -138,9 +139,10 @@ vectorizer = Vectorizer(max_features=10000)
 X = vectorizer.fit_transform(data_set.data)
 X = Normalizer(norm="l2", copy=False).transform(X)
 
+y = data_set.target
 
 # # Feature selection
-# select_chi2 = 1000
+# select_chi2 = 1900
 # print ("Extracting %d best features by a chi-squared test" % select_chi2)
 # t0 = time()
 # ch2 = SelectKBest(chi2, k = select_chi2)
@@ -149,11 +151,9 @@ X = Normalizer(norm="l2", copy=False).transform(X)
 # print "L1:      n_samples: %d, n_features: %d" % X.shape
 # print
 
-
 # X = X.todense()
 X_den = X.toarray()
 
-y = data_set.target
 n_samples, n_features = X.shape
 print "done in %fs" % (time() - t0)
 print "n_samples: %d, n_features: %d" % (n_samples, n_features)
@@ -204,6 +204,7 @@ clfs.append(SVC(C=1000))
 
 # Treat logistic regression specially due to requirement for array input
 clfs_reg = []
+clfs_reg.append(DecisionTreeClassifier(min_split=5))
 clfs_reg.append(OneVsRestClassifier(LogisticRegression(C=1000,penalty='l1')))
 clfs_reg.append(OneVsRestClassifier(LogisticRegression(C=1000,penalty='l2')))
 
