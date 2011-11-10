@@ -14,12 +14,13 @@ from sklearn.datasets import load_files
 from sklearn.feature_extraction.text import Vectorizer
 from sklearn.preprocessing import Normalizer
 
+from sklearn.tree import DecisionTreeClassifier
 from sklearn.linear_model import RidgeClassifier, LogisticRegression
 from sklearn.linear_model.sparse import SGDClassifier
-from sklearn.neighbors import KNeighborsClassifier
+from sklearn.neighbors import KNeighborsClassifier, RadiusNeighborsClassifier
 from sklearn.naive_bayes import MultinomialNB, BernoulliNB, GaussianNB
 from sklearn.svm.sparse import LinearSVC, SVC
-from sklearn.multiclass import OneVsRestClassifier 
+from sklearn.multiclass import OneVsRestClassifier
 
 from sklearn import metrics
 
@@ -38,7 +39,7 @@ categories = ['Advertising','CA', 'Collect', 'Cookies', 'Security', 'Share',
 # Load data
 print "Loading privacy policy dataset for categories:"
 print categories if categories else "all"
-data_set = load_files('Privacypolicy/raw', categories = categories,
+data_set = load_files('Privacypolicy_balance/raw', categories = categories,
                         shuffle = True, random_state = 42)
 print 'data loaded'
 # print "%d documents" % len(data_set.data)
@@ -52,8 +53,7 @@ vectorizer = Vectorizer(max_features=10000)
 X = vectorizer.fit_transform(data_set.data)
 X = Normalizer(norm="l2", copy=False).transform(X)
 
-# X = X.todense()
-X_den = X.toarray()
+# X = X.toarray()
 
 y = data_set.target
 n_samples, n_features = X.shape
@@ -63,7 +63,6 @@ print
 
 # split the dataset in two equal part respecting label proportions
 train, test = iter(StratifiedKFold(y, 10, indices=True)).next()
-
 
 ################################################################################
 # Grid search with k-fold cross validation to tune parameters for SVC
@@ -85,10 +84,18 @@ train, test = iter(StratifiedKFold(y, 10, indices=True)).next()
 #                      'penalty': ['l1', 'l2'],
 #                      'C': [2**-3, 2**-1, 2, 2**3, 2**5, 2**7, 2**9, 2**11, 2**13, 2**15]}]
 
+# parameters for Tree
+# tuned_parameters = [{'max_depth': ['8', '10', '12', '15', '18'],
+#                      'min_split': ['3', '4', '5', '6', '7', '8', '9']}]
+
 # parameters for kNN
 # tuned_parameters = [{'n_neighbors': [1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 
 #                                      23, 25, 27, 29, 31, 33, 35, 37, 39, 41,
 #                                      43, 45, 47, 49, 51, 53, 55]}]
+
+# rNN's not working
+# parameters for rNN
+# tuned_parameters = [{'radius': [1.0]}]
 
 # parameters for Ridge
 # loose search
@@ -105,10 +112,10 @@ train, test = iter(StratifiedKFold(y, 10, indices=True)).next()
 
 # used metrics for fine tuning
 scores = [
-    ('precision', metrics.precision_score),
-    ('recall', metrics.recall_score),
+    # ('precision', metrics.precision_score),
+    # ('recall', metrics.recall_score),
     ('f1', metrics.f1_score),
-    ('accuracy', metrics.zero_one_score)
+    # ('accuracy', metrics.zero_one_score)
 ]
 
 # carry out grid search with CV
@@ -117,9 +124,14 @@ for score_name, score_func in scores:
     t0 = time()
 
     # grid search
+    # Tree is not working correctly, given strangely small numbers
+    # clf = GridSearchCV(DecisionTreeClassifier(),tuned_parameters, score_func=score_func)
     # clf = GridSearchCV(SVC(C=1), tuned_parameters, score_func=score_func)
     # clf = GridSearchCV(LinearSVC(C=1, dual=False), tuned_parameters, score_func=score_func)
     # clf = GridSearchCV(KNeighborsClassifier(n_neighbors=1), 
+    #                     tuned_parameters, score_func=score_func)
+    # rNN's not working
+    # clf = GridSearchCV(RadiusNeighborsClassifier(radius=1.0), 
     #                     tuned_parameters, score_func=score_func)
     # clf = GridSearchCV(RidgeClassifier(alpha=1.0), tuned_parameters, score_func=score_func)
     # clf = GridSearchCV(OneVsRestClassifier(LogisticRegression(C=1000,penalty='l1')),
