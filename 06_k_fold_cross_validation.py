@@ -13,6 +13,7 @@ import numpy as np
 from sklearn.datasets import load_files
 from sklearn.feature_extraction.text import Vectorizer
 from sklearn.preprocessing import Normalizer
+from sklearn.feature_selection import SelectKBest, chi2
 
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.linear_model import RidgeClassifier, LogisticRegression
@@ -23,7 +24,6 @@ from sklearn.svm.sparse import LinearSVC
 from sklearn.multiclass import OneVsRestClassifier
 
 from sklearn import metrics
-from sklearn.utils import check_arrays
 
 from sklearn.cross_validation import KFold
 
@@ -43,8 +43,6 @@ print categories if categories else "all"
 data_set = load_files('Privacypolicy/raw', categories = categories,
                         shuffle = True, random_state = 42)
 print 'data loaded'
-print "%d documents" % len(data_set.data)
-print "%d categories" % len(data_set.target_names)
 print
 
 # Extract features
@@ -53,11 +51,15 @@ t0 = time()
 vectorizer = Vectorizer(max_features=10000)
 X = vectorizer.fit_transform(data_set.data)
 X = Normalizer(norm="l2", copy=False).transform(X)
-print type(X)
-# X = X.todense()
-X = X.toarray()
-print type(X)
+
 y = data_set.target
+
+# feature selection
+ch2 = SelectKBest(chi2, k = 1800)
+X = ch2.fit_transform(X, y)
+
+# X = X.toarray()
+
 n_samples, n_features = X.shape
 print "done in %fs" % (time() - t0)
 print "n_samples: %d, n_features: %d" % (n_samples, n_features)
@@ -72,8 +74,8 @@ num_fold = 10
 kf = KFold(n_samples, k=num_fold, indices=True)
 
 # Note: NBs are not working
-clf = DecisionTreeClassifier(min_split=5)
-# clf = BernoulliNB(alpha=.1)
+# clf = DecisionTreeClassifier(min_split=5)
+clf = BernoulliNB(alpha=.1)
 # clf = MultinomialNB(alpha=.01)
 # clf = OneVsRestClassifier(LogisticRegression(penalty='l2'))
 # clf = KNeighborsClassifier(n_neighbors=13)
@@ -101,11 +103,11 @@ for train_index, test_index in kf:
 
     # metrics
     f1_score = metrics.f1_score(y_test, pred)
-    f1_all += f1_score
     acc_score = metrics.zero_one_score(y_test, pred)
-    acc_all += acc_score
     pre_score = metrics.precision_score(y_test, pred)
     rec_score = metrics.recall_score(y_test, pred)
+    f1_all += f1_score
+    acc_all += acc_score
     pre_all += pre_score
     rec_all += rec_score
 
@@ -115,6 +117,7 @@ pre_all = pre_all/num_fold
 rec_all = rec_all/num_fold
 
 print
+print clf
 print "average f1-score:   %0.5f" % f1_all
 print "average accuracy:   %0.5f" % acc_all
 print "average precision:  %0.5f" % pre_all
