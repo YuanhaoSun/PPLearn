@@ -55,7 +55,7 @@ X = vectorizer.fit_transform(data_set.data)
 X = Normalizer(norm="l2", copy=False).transform(X)
 print type(X)
 # X = X.todense()
-# X = X.toarray()
+X = X.toarray()
 print type(X)
 y = data_set.target
 n_samples, n_features = X.shape
@@ -89,20 +89,15 @@ rec_all = 0.0
 
 # Test for 10 rounds using the results from 10 fold cross validations
 for train_index, test_index in kf:
+
     X_train, X_test = X[train_index], X[test_index]
     y_train, y_test = y[train_index], y[test_index]
 
-    print "Training: "
-    print clf
-    t0 = time()
     clf.fit(X_train, y_train)
     train_time = time() - t0
-    print "train time: %0.3fs" % train_time
 
-    t0 = time()
     pred = clf.predict(X_test)
     test_time = time() - t0
-    print "test time:  %0.3fs" % test_time
 
     # metrics
     f1_score = metrics.f1_score(y_test, pred)
