@@ -1,23 +1,22 @@
 """
 ======================================================
-Test classifiers using 10-fold Cross Validation
+Ensemble: Stacking
 ======================================================
-Test classifiers using 10-fold Cross Validation
+Ensemble learning
 """
 
 print __doc__
 
 from time import time
 import numpy as np
-
-from itertools import izip
+# from itertools import izip
 
 from sklearn.datasets import load_files
 from sklearn.feature_extraction.text import Vectorizer
-from sklearn.preprocessing import Normalizer
-
+from sklearn.preprocessing import Normalizer, normalize, scale
 from sklearn.feature_selection import SelectKBest, chi2
 
+# Classification
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.linear_model import RidgeClassifier, LogisticRegression
 from sklearn.linear_model.sparse import SGDClassifier
@@ -26,18 +25,22 @@ from sklearn.naive_bayes import MultinomialNB, BernoulliNB, GaussianNB
 from sklearn.svm.sparse import LinearSVC, SVC
 from sklearn.multiclass import OneVsRestClassifier
 
-from sklearn import metrics
-from sklearn.utils import check_arrays
+# Regression
+from sklearn.svm import SVR
+from sklearn.linear_model import LinearRegression, Ridge, Lasso, BayesianRidge, LogisticRegression, ElasticNet, Lars
+from sklearn.neighbors import KNeighborsRegressor
 
+
+from sklearn import metrics
 from sklearn.cross_validation import KFold
 
 
-# pairwise implementation
-# for appending a list using one element with its previous element
-def pairwise(iterable):
-    "s -> (s0,s1), (s2,s3), (s4, s5), ..."
-    a = iter(iterable)
-    return izip(a, a)
+# # pairwise implementation
+# # for appending a list using one element with its previous element
+# def pairwise(iterable):
+#     "s -> (s0,s1), (s2,s3), (s4, s5), ..."
+#     a = iter(iterable)
+#     return izip(a, a)
 
 
 ###############################################################################
@@ -167,8 +170,10 @@ z_logis = np.array([], dtype=np.int32)
 
 # initialize empty y and z
 
-print X_den.shape
-print y.shape
+print 'X_den shape: ', X_den.shape
+print 'y shape:     ', y.shape
+# np.savetxt('X.txt', X_den, fmt='%0.4f')
+# np.savetxt('y.txt', y, fmt='%d')
 
 # Test for 10 rounds using the results from 10 fold cross validations
 for i, (train_index, test_index) in enumerate(kf):
@@ -181,73 +186,81 @@ for i, (train_index, test_index) in enumerate(kf):
     X_den_train, X_den_test = X_den[train_index], X_den[test_index]
 
     # feed models
-    clf_bNB.fit(X_train, y_train)
+    # clf_bNB.fit(X_train, y_train)
     clf_mNB.fit(X_train, y_train)
     clf_kNN.fit(X_train, y_train)
     clf_ridge.fit(X_train, y_train)
     clf_SGD.fit(X_train, y_train)
     clf_lSVC.fit(X_train, y_train)
     clf_SVC.fit(X_train, y_train)
-    clf_tree.fit(X_den_train, y_train)
+    # clf_tree.fit(X_den_train, y_train)
     clf_logis.fit(X_den_train, y_train)
 
     # get prediction for this fold run
-    pred_bNB    = clf_bNB.predict(X_test)
+    # pred_bNB    = clf_bNB.predict(X_test)
     pred_mNB    = clf_mNB.predict(X_test)
     pred_kNN    = clf_kNN.predict(X_test)
     pred_ridge  = clf_ridge.predict(X_test)
     pred_SGD    = clf_SGD.predict(X_test)
     pred_lSVC   = clf_lSVC.predict(X_test)
     pred_SVC    = clf_SVC.predict(X_test)
-    pred_tree   = clf_tree.predict(X_den_test)
+    # pred_tree   = clf_tree.predict(X_den_test)
     pred_logis  = clf_logis.predict(X_den_test)
 
     # update z array for each model
-    z_bNB   = np.append(z_bNB    , pred_bNB  , axis=None)
+    # z_bNB   = np.append(z_bNB    , pred_bNB  , axis=None)
     z_mNB   = np.append(z_mNB    , pred_mNB  , axis=None)
     z_kNN   = np.append(z_kNN    , pred_kNN  , axis=None)
     z_ridge = np.append(z_ridge  , pred_ridge, axis=None)
     z_SGD   = np.append(z_SGD    , pred_SGD  , axis=None)
     z_lSVC  = np.append(z_lSVC   , pred_lSVC , axis=None)
     z_SVC   = np.append(z_SVC    , pred_SVC  , axis=None)
-    z_tree  = np.append(z_tree   , pred_tree , axis=None)
+    # z_tree  = np.append(z_tree   , pred_tree , axis=None)
     z_logis = np.append(z_logis  , pred_logis, axis=None)
-
-    # Best implementation... Too confusion for now...
-    # # update z array for each model during k-fold CV
-    # # finally, z (array of predication) of  each model
-    # # will be full size for all training examples
-    # for clf, (z_temp_head, z_temp_tail) in zip(clfs, pairwise(z_m)):
-    #     clf.fit(X_train, y_train)
-    #     pred = clf.predict(X_test)
-    #     z_temp = np.append(z_temp, pred, axis=None)
-
-
-    # Best implementation... Too confusion for now...
-    # for clf, z_temp_den in zip(clfs_den, z_m_den):
-    #     clf.fit(X_den_train, y_train)
-    #     pred = clf.predict(X_den_test)
-    #     z_temp_den = np.append(z_temp_den, pred, axis=None)
-    #     print z_temp_den.shape
-
-
 
 
 # putting z's from each model into one 2d matrix
 # this is the (feature) input, similar as X, for level 1
 # In level 1, y is still y.
-z = np.array([z_bNB, z_mNB, z_kNN, z_ridge, z_SGD, z_lSVC, z_SVC, z_tree, z_logis], dtype=np.int32)
-# z = np.array([z_bNB, z_mNB], dtype=np.int32)
+# z = np.array([z_bNB, z_mNB, z_kNN, z_ridge, z_SGD, z_lSVC, z_SVC, z_tree, z_logis], dtype=np.int32)
+z = np.array([z_mNB, z_kNN, z_ridge, z_SGD, z_lSVC, z_SVC, z_logis], dtype=np.int32)
 z = z.transpose()
-print z.shape
-print z
+print 'z shape:     ', z.shape
+# np.savetxt('z.txt', z, fmt='%d')
+
+# convert z array to dtype=float
+# z = z.astype(float)
+
+# z = normalize(z, norm="l2")
+# z = scale(z)
+
+n_samples = z.shape[0]
+n_features = z.shape[1]
+print 'n_samples', n_samples
+print 'n_features', n_features
+
+
 
 
 ###############################################################################
 # level 1 traing
 
-# clf = LinearSVC(loss='l2', penalty='l2', C=1000, dual=False, tol=1e-3)
-clf = BernoulliNB(alpha=.01)
+# Classification
+# clf = KNeighborsClassifier(n_neighbors=21)
+# clf = DecisionTreeClassifier(max_depth=12, min_split=8)
+# Regression
+clf = SVR(C=64, gamma=0.001)
+# clf = SVR(C=1000, gamma=0.01, kernel='linear')
+# clf = Ridge()
+# clf = BayesianRidge()
+# clf = LinearRegression()
+# clf = KNeighborsRegressor(n_neighbors=13)
+# clf = LogisticRegression(C=10,penalty='l2')
+# clf = Lasso(alpha=0.1)
+# clf = ElasticNet()
+# clf = Lars()
+
+
 
 # Initialize variables for couting the average
 f1_all = 0.0
@@ -255,8 +268,11 @@ acc_all = 0.0
 pre_all = 0.0
 rec_all = 0.0
 
+fold_num_l1 = 10
+kf1 = KFold(n_samples, k=fold_num_l1, indices=True)
+
 # level 1 evaluation
-for train_index, test_index in kf:
+for train_index, test_index in kf1:
 
     z_train, z_test = z[train_index], z[test_index]
     y_train, y_test = y[train_index], y[test_index]
@@ -264,137 +280,36 @@ for train_index, test_index in kf:
     clf.fit(z_train, y_train)
     pred = clf.predict(z_test)
 
+    # print pred
+    # Change regression result (pred) back to int for comparison with y_test
+    # method 1: this is wrong, it directly remove the decimals
+    # pred = pred.astype(int)
+    # method 2: rounding
+    pred = np.around(pred)
+    pred = pred.astype(int)
+
+    print y_test
+    print pred
+
     #Scores
     f1_score = metrics.f1_score(y_test, pred)
-    f1_all += f1_score
-    
-    # change the calculateion of accuracy
-    # acc_score = class_metrics(y_test, pred, acc=1)
-    # acc_score  = np.mean(pred.ravel() == y_test.ravel()) * 100
     acc_score =  float( np.sum(pred == y_test) )  / float(len(y_test))
-    acc_all += acc_score
-
     pre_score = metrics.precision_score(y_test, pred)
     rec_score = metrics.recall_score(y_test, pred)
+    f1_all += f1_score
+    acc_all += acc_score
     pre_all += pre_score
     rec_all += rec_score
 
-f1_all = f1_all/fold_num
-acc_all = acc_all/fold_num
-pre_all = pre_all/fold_num
-rec_all = rec_all/fold_num
+f1_all = f1_all/fold_num_l1
+acc_all = acc_all/fold_num_l1
+pre_all = pre_all/fold_num_l1
+rec_all = rec_all/fold_num_l1
 
-# average the metrics from 10 fold
+# average the metrics from K fold
 print clf
 print "average f1-score:   %0.5f" % f1_all
 print "average precision:  %0.5f" % pre_all
 print "averege recall:     %0.5f" % rec_all
-# changed accuracy calculation
-# NOT APPLICABLE any more: accuracy is not a good metrics
-#                   because the sparse nature of matrix
 print "average accuracy:   %0.5f" % acc_all
 print
-
-
-
-
-
-
-
-
-
-# for clf in clfs:
-
-#     # Initialize variables for couting the average
-#     f1_all = 0.0
-#     acc_all = 0.0
-#     pre_all = 0.0
-#     rec_all = 0.0
-
-#     # Test for 10 rounds using the results from 10 fold cross validations
-#     for train_index, test_index in kf:
-
-#         X_train, X_test = X[train_index], X[test_index]
-#         y_train, y_test = y[train_index], y[test_index]
-
-#         clf.fit(X_train, y_train)
-#         pred = clf.predict(X_test)
-
-#         #Scores
-#         f1_score = metrics.f1_score(y_test, pred)
-#         f1_all += f1_score
-        
-#         # change the calculateion of accuracy
-#         # acc_score = class_metrics(y_test, pred, acc=1)
-#         # acc_score  = np.mean(pred.ravel() == y_test.ravel()) * 100
-#         acc_score =  float( np.sum(pred == y_test) )  / float(len(y_test))
-#         acc_all += acc_score
-
-#         pre_score = metrics.precision_score(y_test, pred)
-#         rec_score = metrics.recall_score(y_test, pred)
-#         pre_all += pre_score
-#         rec_all += rec_score
-
-#     f1_all = f1_all/fold_num
-#     acc_all = acc_all/fold_num
-#     pre_all = pre_all/fold_num
-#     rec_all = rec_all/fold_num
-
-#     # average the metrics from 10 fold
-#     print clf
-#     print "average f1-score:   %0.5f" % f1_all
-#     print "average precision:  %0.5f" % pre_all
-#     print "averege recall:     %0.5f" % rec_all
-#     # changed accuracy calculation
-#     # NOT APPLICABLE any more: accuracy is not a good metrics
-#     #                   because the sparse nature of matrix
-#     print "average accuracy:   %0.5f" % acc_all
-#     print
-
-
-# for clf in clfs_den:
-
-#     # Initialize variables for couting the average
-#     f1_all = 0.0
-#     acc_all = 0.0
-#     pre_all = 0.0
-#     rec_all = 0.0
-
-#     # Test for 10 rounds using the results from 10 fold cross validations
-#     for train_index, test_index in kf:
-
-#         X_train, X_test = X_den[train_index], X_den[test_index]
-#         y_train, y_test = y[train_index], y[test_index]
-
-#         clf.fit(X_train, y_train)
-#         pred = clf.predict(X_test)
-
-#         #Scores
-#         f1_score = metrics.f1_score(y_test, pred)
-#         f1_all += f1_score
-
-#         # change the calculateion of accuracy
-#         # acc_score = class_metrics(y_test, pred, acc=1)
-#         acc_score  = np.mean(pred.ravel() == y_test.ravel()) * 100
-#         acc_all += acc_score
-        
-#         pre_score = metrics.precision_score(y_test, pred)
-#         rec_score = metrics.recall_score(y_test, pred)
-#         pre_all += pre_score
-#         rec_all += rec_score
-
-#     # average the metrics from 10 fold
-#     f1_all = f1_all/fold_num
-#     acc_all = acc_all/fold_num
-#     pre_all = pre_all/fold_num
-#     rec_all = rec_all/fold_num
-
-#     print clf
-#     print "average f1-score:   %0.5f" % f1_all
-#     print "average precision:  %0.5f" % pre_all
-#     print "averege recall:     %0.5f" % rec_all
-#     # changed accuracy calculation
-#     # NOT APPLICABLE any more: accuracy is not a good metrics
-#     #                   because the sparse nature of matrix
-#     # print "average accuracy:   %0.5f" % acc_all
-#     print
