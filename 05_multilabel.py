@@ -152,6 +152,7 @@ X_den = X.toarray()
 # "All transactions are done through Paypal which keeps your credit/debit card information private. Thus, credit/debit card numbers are never made known to us.",
 # "Please do not hesitate to contact us should you have any queries regarding our Privacy Policy.",
 # ]
+
 # subjectivity disagreement itens
 docs_new = [
 "When you register for account credentials, Ning collects certain Personal Information, including your name, email address, and a password that you select. In addition, Network Creators must provide their credit card or other payment information and telephone number (for customer support purposes). Ning or its third party payment providers use this Personal Information related to your billing information solely to administer your services on the Ning Platform and to process your transactions including your purchase of Ning Product Plans, Support Services, and upgrades",
@@ -165,6 +166,7 @@ docs_new = [
 "Your information to our service providers. We use service providers who help us to provide you with our services. We give relevant persons working for some of these providers access to your information, but only to the extent necessary for them to perform their services for us. We also implement reasonable contractual and technical protections to ensure the confidentiality of your personal information and data is maintained, used only for the provision of their services to us, and handled in accordance with this privacy policy. Examples of service providers include payment processors, email service providers, and web traffic analytics tools",
 "Some Microsoft sites allow you to choose to share your personal information with select Microsoft partners so that they can contact you about their products, services or offers. Other sites, such as MSN instead may give you a separate choice as to whether you wish to receive communications from Microsoft about a partner's particular offering (without transferring your personal information to the third party). See the Communication Preferences section below for more information.",
 ]
+
 X_new = vectorizer.transform(docs_new)
 
 
@@ -184,7 +186,7 @@ clf_sgd = SGDClassifier(alpha=.0001, n_iter=50, penalty="l2")
 # for multilabel classification
 # clf_lgr = OneVsRestClassifier(LogisticRegression(C=1000,penalty='l1'))
 # kNN does not have decision function due to its nature
-# clf = KNeighborsClassifier(n_neighbors=13)
+# clf_knn = KNeighborsClassifier(n_neighbors=13)
 
 # train
 clf_nb.fit(X, y)
@@ -214,7 +216,7 @@ print pred_decision
 print
 
 # filtering using threshold
-pred_decision_filtered = label_filtering(pred_decision, 0.2)
+pred_decision_filtered = label_filtering(pred_decision, 0.1)
 print pred_decision_filtered
 print
 
@@ -227,31 +229,29 @@ for doc, labels in zip(docs_new, pred_decision_filtered):
     print
 
 
-# #####################################
-# # decision_function and predict_proba
-# print clf_nb
-# pred_prob = clf_nb.predict_proba(X_new)
-# print pred_prob
-# print
+#####################################
+# decision_function and predict_proba
+print clf_nb
+pred_prob = clf_nb.predict_proba(X_new)
+print pred_prob
+print
 
-# print clf_lsvc
-# pred_decision = clf_lsvc.decision_function(X_new)
-# print pred_decision
-# print 
+print clf_lsvc
+pred_decision = clf_lsvc.decision_function(X_new)
+print pred_decision
+print 
 
-# print clf_svc
-# # SVC should have the decision_function method, but got error:
-# # error - ValueError: setting an array element with a sequence
-# # pred_decision = clf_svc.decision_function(X_new)
-# pred_prob = clf_svc.predict_proba(X_new)
-# print pred_prob
-# print
+print clf_svc
+# SVC should have the decision_function method, but got error:
+# error - ValueError: setting an array element with a sequence
+# pred_decision = clf_svc.decision_function(X_new)
+pred_prob = clf_svc.predict_proba(X_new)
+print pred_prob
+print
 
-# print clf_sgd
-# pred_decision = clf_sgd.decision_function(X_new)
-# # Mentioned in scikit learn's API class manual
-# # that SGDClassifier should have menthod predict_proba
-# # but in test, none of the three loss modes of SGD supports predict_proba
-# # pred_prob = clf_sgd.predict_proba(X_new)
-# print pred_decision
-# print
+print clf_sgd
+pred_decision = clf_sgd.decision_function(X_new)
+# pred_prob is only supported for binary classification!
+# pred_prob = clf_sgd.predict_proba(X_new)
+print pred_decision
+print
