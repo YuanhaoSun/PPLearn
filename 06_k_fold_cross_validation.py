@@ -20,10 +20,12 @@ from sklearn.linear_model import RidgeClassifier, LogisticRegression
 from sklearn.linear_model.sparse import SGDClassifier
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.naive_bayes import MultinomialNB, BernoulliNB, GaussianNB
-from sklearn.svm.sparse import LinearSVC
+from sklearn.svm.sparse import LinearSVC, SVC
 from sklearn.multiclass import OneVsRestClassifier
 
 from sklearn import metrics
+
+import treelearn 
 
 from sklearn.cross_validation import KFold
 
@@ -40,7 +42,7 @@ categories = ['Advertising','CA', 'Collect', 'Cookies', 'Security', 'Share',
 # Load data
 print "Loading privacy policy dataset for categories:"
 print categories if categories else "all"
-data_set = load_files('Privacypolicy/raw', categories = categories,
+data_set = load_files('Privacypolicy_balance/raw', categories = categories,
                         shuffle = True, random_state = 42)
 print 'data loaded'
 print
@@ -58,7 +60,7 @@ y = data_set.target
 ch2 = SelectKBest(chi2, k = 1800)
 X = ch2.fit_transform(X, y)
 
-# X = X.toarray()
+X = X.toarray()
 
 n_samples, n_features = X.shape
 print "done in %fs" % (time() - t0)
@@ -74,14 +76,17 @@ num_fold = 10
 kf = KFold(n_samples, k=num_fold, indices=True)
 
 # Note: NBs are not working
-# clf = DecisionTreeClassifier(min_split=5)
-clf = BernoulliNB(alpha=.1)
+# clf = DecisionTreeClassifier(max_depth=12, min_split=3)
+# clf = BernoulliNB(alpha=.1)
 # clf = MultinomialNB(alpha=.01)
 # clf = OneVsRestClassifier(LogisticRegression(penalty='l2'))
 # clf = KNeighborsClassifier(n_neighbors=13)
 # clf = RidgeClassifier(tol=1e-1)
 # clf = SGDClassifier(alpha=.0001, n_iter=50, penalty="elasticnet")
 # clf = LinearSVC(loss='l2', penalty='l1', C=1000, dual=False, tol=1e-3)
+# Add Random Forest from treelearn library
+clf = treelearn.ClassifierEnsemble(bagging_percent=0.8, base_model = treelearn.RandomizedTree(),
+            stacking_model=SVC(C=1024, kernel='rbf', degree=3, gamma=0.001, probability=True))
 
 # Initialize variables for couting the average
 f1_all = 0.0

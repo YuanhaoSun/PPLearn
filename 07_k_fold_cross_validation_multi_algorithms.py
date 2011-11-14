@@ -191,9 +191,9 @@ Logisticl1 = "OneVsRestClassifier(estimator=LogisticRegression(C=1000, dual=Fals
 # Make a classifier list
 clfs = []
 # Note: NBs are not working
-clfs.append(BernoulliNB(alpha=.01))
 clfs.append(MultinomialNB(alpha=.01))
-clfs.append(KNeighborsClassifier(n_neighbors=n_neighb))
+clfs.append(BernoulliNB(alpha=.01))
+clfs.append(KNeighborsClassifier(n_neighbors=13))
 clfs.append(RidgeClassifier(tol=1e-1))
 clfs.append(SGDClassifier(alpha=.0001, n_iter=50, penalty="l1"))
 clfs.append(SGDClassifier(alpha=.0001, n_iter=50, penalty="l2"))
