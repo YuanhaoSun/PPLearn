@@ -1,0 +1,82 @@
+Yahoo/FW !/. does/VBZ not/RB rent/VB ,/, sell/VB ,/, or/CC share/VB personal/JJ information/NN about/IN you/PRP with/IN other/JJ people/NNS or/CC non-affiliated/JJ companies/NNS except/VB to/TO provide/VB products/NNS or/CC services/NNS you/PRP 've/VBP requested/VBN ,/, when/WRB we/PRP have/VBP your/PRP$ permission/NN ,/, or/CC under/IN the/DT following/VBG circumstances/NNS
+
+(ROOT
+  (FRAG
+    (ADJP (FW Yahoo) (. !))
+    (S
+      (VP (VBZ does) (RB not)
+        (VP (VB rent) (, ,) (VB sell) (, ,)
+          (CC or)
+          (VB share)
+          (NP (JJ personal) (NN information))
+          (PP
+            (PP (IN about)
+              (VP
+                (NP (PRP you))
+                (PP (IN with)
+                  (NP
+                    (NP (JJ other) (NNS people))
+                    (CC or)
+                    (NP (JJ non-affiliated) (NNS companies))))
+                (SBAR (VB except)
+                  (S
+                    (VP (TO to)
+                      (VP (VB provide)
+                        (NP
+                          (NP (NNS products)
+                            (CC or)
+                            (NNS services))
+                          (SBAR
+                            (S
+                              (NP (PRP you))
+                              (VP (VBP 've)
+                                (VP (VBN requested) (, ,)
+                                  (SBAR
+                                    (WHADVP (WRB when))
+                                    (S
+                                      (NP (PRP we))
+                                      (VP (VBP have)
+                                        (NP (PRP$ your) (NN permission))))))))))))))))
+            (, ,)
+            (CC or)
+            (PP (IN under)
+              (NP (DT the) (VBG following) (NNS circumstances)))))))))
+
+root(ROOT-0, Yahoo-1)
+aux(rent-5, does-3)
+neg(rent-5, not-4)
+dep(Yahoo-1, rent-5)
+dep(Yahoo-1, rent-5')
+conj_or(rent-5, rent-5')
+dep(Yahoo-1, sell-7)
+conj_or(rent-5, sell-7)
+dep(Yahoo-1, share-10)
+conj_or(rent-5, share-10)
+amod(information-12, personal-11)
+dobj(rent-5, information-12)
+prep_about(rent-5, you-14)
+amod(people-17, other-16)
+prep_with(you-14, people-17)
+amod(companies-20, non-affiliated-19)
+prep_with(you-14, companies-20)
+conj_or(people-17, companies-20)
+dep(provide-23, except-21)
+aux(provide-23, to-22)
+xcomp(you-14, provide-23)
+dobj(provide-23, products-24)
+dobj(requested-29, products-24)
+dobj(provide-23, services-26)
+conj_or(products-24, services-26)
+dobj(requested-29, services-26)
+nsubj(requested-29, you-27)
+aux(requested-29, 've-28)
+rcmod(products-24, requested-29)
+advmod(have-33, when-31)
+nsubj(have-33, we-32)
+advcl(requested-29, have-33)
+poss(permission-35, your-34)
+dobj(have-33, permission-35)
+det(circumstances-41, the-39)
+amod(circumstances-41, following-40)
+prep_under(rent-5', circumstances-41)
+

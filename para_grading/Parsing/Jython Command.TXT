@@ -1,0 +1,1 @@
+jython -Dpython.path=./stanford-parser.jar test.py
