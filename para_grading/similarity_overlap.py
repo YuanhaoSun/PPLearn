@@ -5,11 +5,9 @@ from nltk import word_tokenize as wt
 # Calculate sentence similarity base on overlap, i.e.
 # Sim = |Q intersect R| / |Q|
 def sim_overlap(sentence1, sentence2): 
-
     # lowercase
     sentence1 = sentence1.lower()
     sentence2 = sentence2.lower()
-
     # remove punctuation
     nopunct_sentence1 = ''.join([c for c in sentence1 
                                         if re.match("[a-z\-\' \n\t]", c)])
@@ -18,19 +16,34 @@ def sim_overlap(sentence1, sentence2):
     # tokenize
     line1 = wt(nopunct_sentence1)
     line2 = wt(nopunct_sentence2)
-
+    # Calculate element numbers of intersection and sentence1
     # combined_line = line1 + line2
     # union_num = len(set(combined_line))
     intersection_num = len(set(line1) & set(line2))
     sentence1_num = len(set(line1))
-
-    # return score
+    # return score = |Q intersect R| / |Q|
     sim = float(intersection_num) / float(sentence1_num)
     return sim
 
 
-sentence1 = "We do not sell, lease, rent or otherwise disclose your personal data to third parties unless otherwise stated below"
-sentence2 = "We do not share Personal Information with third parties except in the limited circumstances described in this Privacy Policy"
+# Read lines from a pre-defined txt file for one category of share statement
+# convert the lines into a list
+# Return the list
+def load_sentences_to_list(category_name):
+    sentence_list = []
+    f = open('./Dataset/'+category_name+'.txt', 'rb')
+    for line in f.readlines():
+        line = line.rstrip("\r\n") # remove '\r\n' at the end of a sentence
+        sentence_list.append(line)
+    f.close()
+    return sentence_list
+
+
+list1 = load_sentences_to_list('data_not_sell')
+list2 = load_sentences_to_list('data_sell_share')
+
+sentence1 = list1[0]
+sentence2 = list2[0]
 
 score = sim_overlap(sentence1, sentence2)
 print score
