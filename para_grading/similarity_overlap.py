@@ -1,7 +1,7 @@
 import re
 from nltk import word_tokenize as wt
 
-import similarity_utils
+from similarity_utils import load_sentences
 
 # Calculate sentence similarity base on overlap, i.e.
 # Sim = |Q intersect R| / |Q|
@@ -27,12 +27,12 @@ def sim_overlap(sentence1, sentence2):
     return sim
 
 
-# Test
-list1 = similarity_utils.load_sentences('data_not_sell')
-list2 = similarity_utils.load_sentences('data_sell_share')
+# # Test
+# list1 = load_sentences('data_not_sell')
+# list2 = load_sentences('data_sell_share')
 
-sentence1 = list1[0]
-sentence2 = list2[0]
+# sentence1 = list1[0]
+# sentence2 = list2[0]
 
-score = sim_overlap(sentence1, sentence2)
-print score
+# score = sim_overlap(sentence1, sentence2)
+# print score

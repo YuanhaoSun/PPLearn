@@ -2,11 +2,10 @@ import re
 from nltk import word_tokenize as wt
 from nltk.text import TextCollection
 
-import similarity_utils
-
+from similarity_utils import load_sentences
 
 # create the textcollection for calculation of IDF
-list_all_sentences = similarity_utils.load_sentences('data_all')
+list_all_sentences = load_sentences('data_all')
 text_collection = TextCollection(list_all_sentences)
 
 
@@ -40,12 +39,12 @@ def sim_overlap_idf(sentence1, sentence2):
     return sim
 
 
-# Test
-list1 = similarity_utils.load_sentences('data_not_sell')
-list2 = similarity_utils.load_sentences('data_sell_share')
+# # Test
+# list1 = load_sentences('data_not_sell')
+# list2 = load_sentences('data_sell_share')
 
-sentence1 = list1[0]
-sentence2 = list2[0]
+# sentence1 = list1[0]
+# sentence2 = list2[0]
 
-score = sim_overlap_idf(sentence1, sentence2)
-print score
+# score = sim_overlap_idf(sentence1, sentence2)
+# print score
