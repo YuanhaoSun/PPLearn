@@ -1,6 +1,7 @@
 import re
-from nltk import word_tokenize as wt 
+from nltk import word_tokenize as wt
 
+import similarity_utils
 
 # Calculate sentence similarity base on overlap, i.e.
 # Sim = |Q intersect R| / |Q|
@@ -26,21 +27,9 @@ def sim_overlap(sentence1, sentence2):
     return sim
 
 
-# Read lines from a pre-defined txt file for one category of share statement
-# convert the lines into a list
-# Return the list
-def load_sentences_to_list(category_name):
-    sentence_list = []
-    f = open('./Dataset/'+category_name+'.txt', 'rb')
-    for line in f.readlines():
-        line = line.rstrip("\r\n") # remove '\r\n' at the end of a sentence
-        sentence_list.append(line)
-    f.close()
-    return sentence_list
-
-
-list1 = load_sentences_to_list('data_not_sell')
-list2 = load_sentences_to_list('data_sell_share')
+# Test
+list1 = similarity_utils.load_sentences('data_not_sell')
+list2 = similarity_utils.load_sentences('data_sell_share')
 
 sentence1 = list1[0]
 sentence2 = list2[0]
