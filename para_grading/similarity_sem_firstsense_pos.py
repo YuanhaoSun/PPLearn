@@ -1,14 +1,15 @@
 import re
 
 from nltk.corpus import wordnet as wn 
-from nltk import word_tokenize as wt 
+from nltk import word_tokenize as wt
+from nltk import pos_tag
 from nltk.corpus import stopwords
 from nltk.corpus import wordnet_ic
 
 from similarity_utils import load_sentences
 
-# Calculate sentence semantic similarity base on first sense heuristic without alpha
-def sim_sem_firstsense(sentence1, sentence2, metric=wn.path_similarity, ic=None):
+# Calculate sentence semantic similarity base on first sense heuristic using POS
+def sim_sem_firstsense_pos(sentence1, sentence2, metric=wn.path_similarity, ic=None):
     
     # import stopwords 
     sw = stopwords.words('english')
@@ -20,6 +21,18 @@ def sim_sem_firstsense(sentence1, sentence2, metric=wn.path_similarity, ic=None)
     # tokenize
     line1 = wt(nopunct_sentence1)
     line2 = wt(nopunct_sentence2)
+    # POS 
+    pos_line1 = pos_tag(line1)
+    pos_line2 = pos_tag(line2)
+
+    print pos_line1
+    print pos_line2
+
+    for tagged_tuple in pos_line1:
+        term = tagged_tuple[0]
+        tag  = tagged_tuple[1]
+        if tag.startswith('V'):
+            print tagged_tuple
 
     # # get list of synsets only using first senses, without stopword elimination
     # synset_list1 = reduce(lambda x,y:x+y, [ [wn.synsets(x)[0]] for x in line1 if wn.synsets(x) ])
@@ -73,19 +86,19 @@ sentence2 = list2[0]
 brown_ic = wordnet_ic.ic('ic-brown.dat')
 semcor_ic = wordnet_ic.ic('ic-semcor.dat')
 
-sim_sem_firstsense(sentence1, sentence2)
+sim_sem_firstsense_pos(sentence1, sentence2)
 
-# score = sim_sem_firstsense(sentence1, sentence2)
+# score = sim_sem_firstsense_pos(sentence1, sentence2)
 # print 'path: ', score
-# score = sim_sem_firstsense(sentence1, sentence2, metric=wn.lch_similarity)
+# score = sim_sem_firstsense_pos(sentence1, sentence2, metric=wn.lch_similarity)
 # print 'lch : ', score
-# score = sim_sem_firstsense(sentence1, sentence2, metric=wn.wup_similarity)
+# score = sim_sem_firstsense_pos(sentence1, sentence2, metric=wn.wup_similarity)
 # print 'wup : ', score
-# score = sim_sem_firstsense(sentence1, sentence2, metric=wn.res_similarity, ic=brown_ic)
+# score = sim_sem_firstsense_pos(sentence1, sentence2, metric=wn.res_similarity, ic=brown_ic)
 # print 'res - brown  : ', score
-# score = sim_sem_firstsense(sentence1, sentence2, metric=wn.res_similarity, ic=semcor_ic)
+# score = sim_sem_firstsense_pos(sentence1, sentence2, metric=wn.res_similarity, ic=semcor_ic)
 # print 'res - semcor : ', score
-# score = sim_sem_firstsense(sentence1, sentence2, metric=wn.jcn_similarity, ic=brown_ic)
+# score = sim_sem_firstsense_pos(sentence1, sentence2, metric=wn.jcn_similarity, ic=brown_ic)
 # print 'jcn : ', score
-# score = sim_sem_firstsense(sentence1, sentence2, metric=wn.lin_similarity, ic=brown_ic)
+# score = sim_sem_firstsense_pos(sentence1, sentence2, metric=wn.lin_similarity, ic=brown_ic)
 # print 'lin : ', score
