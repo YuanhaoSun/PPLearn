@@ -1,5 +1,9 @@
 import itertools
 
+# pretty float with for print
+class PrettyFloat(float):
+    def __repr__(self):
+        return "%0.3f" % self
 
 # Read lines from a pre-defined txt file for one category of 
 # share statements and convert the lines into a list
@@ -83,5 +87,44 @@ def normalization(score_2d_array):
     #     normalized_2d_array.append([])
     #     for j, item in enumerate(row):
     #         normalized_2d_array[i].append((item-min_value)/max_min_diff)
+
+    return normalized_2d_array
+
+
+# Normalize array to range [0,1]
+# Use min from the diagonal as max
+# then calculate: normalized value = (x-min)/(max-min)
+# If normalized value > 1, make it = 1
+# 
+# Return a normalized 2d score array
+# 
+def normalization_symmetric(score_2d_array):
+    if len(score_2d_array) != len(score_2d_array[0]):
+        'Warning: input array should be symmetric 2d array! Random behavior may happen!'
+    # generate a 1d merged list from the 2d array
+    # for getting max and min
+    merged = list(itertools.chain(*score_2d_array))
+    min_value = min(merged)
+    # generate a list of all elements on the diagonal
+    diagonal = [ score_2d_array[r][r] for r in range(len(score_2d_array))]
+    max_value = min(diagonal)
+    print 'min: ', min_value
+    print 'max: ', max_value
+    max_min_diff = max_value - min_value
+
+    # put normalized value back into a new 2d array
+    normalized_2d_array = [[((item-min_value)/max_min_diff) for item in row] for row in score_2d_array]
+    # # The above one-line list comprehension equals to the five lines below
+    # normalized_2d_array = []
+    # for i, row in enumerate(score_2d_array):
+    #     normalized_2d_array.append([])
+    #     for j, item in enumerate(row):
+    #         normalized_2d_array[i].append((item-min_value)/max_min_diff)
+
+    # put item = 1 for the ones > 1
+    for i, row in enumerate(normalized_2d_array):
+        for j, item in enumerate(row):
+            if item > 1:
+                normalized_2d_array[i][j] = 1
 
     return normalized_2d_array
