@@ -19,7 +19,7 @@ from similarity_utils import load_sentences
 # 
 # Returns: the list of max scores for each term in sentence 1
 
-def inter_sentence_max(filtered_line1, synset_list2, metric=wn.path_similarity, ic=None):
+def inter_sentence_max(filtered_line1, synset_list2, metric, ic):
 
     # iterate to get a list of all max similarity for all words in sentence 1
     max_scores_list1 = []
