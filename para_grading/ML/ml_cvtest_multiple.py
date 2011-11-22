@@ -1,12 +1,3 @@
-"""
-======================================================
-Test classifiers using 10-fold Cross Validation
-======================================================
-Test classifiers using 10-fold Cross Validation
-"""
-
-print __doc__
-
 from time import time
 import numpy as np
 
@@ -51,6 +42,15 @@ print
 print "Extracting features from the training dataset using a sparse vectorizer"
 t0 = time()
 vectorizer = Vectorizer(max_features=10000)
+# # Remove Using Stopword
+vectorizer.analyzer.stop_words = set([])
+# vectorizer.analyzer.stop_words = set(["we", "do", "you", "your", "the", "that", "this", 
+#                                     "is", "was", "are", "were", "being", "be", "been",
+#                                     "for", "of", "as", "in",  "to", "at", "by",
+#                                     # "or", "and",
+#                                     "ve",
+#                                     "amazon", "com", "inc", "emc", "alexa", "realnetworks", "google", "linkedin",
+#                                     "fox", "zynga", "ea", "yahoo", "travelzoo", "kaltura", "2co", ])
 X = vectorizer.fit_transform(data_set.data)
 X = Normalizer(norm="l2", copy=False).transform(X)
 
@@ -65,7 +65,7 @@ y = data_set.target
 # print "Done in %fs" % (time() - t0)
 # print "L1:      n_samples: %d, n_features: %d" % X.shape
 # print
-ch2 = SelectKBest(chi2, k = 80)
+ch2 = SelectKBest(chi2, k = 95)
 X = ch2.fit_transform(X, y)
 
 

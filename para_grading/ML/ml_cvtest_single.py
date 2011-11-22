@@ -1,19 +1,15 @@
-"""
-======================================================
-Classificatio with CrossValidation
-======================================================
-Using CrossValidation to get the fair accuracy of algorithms.
-"""
-
-print __doc__
-
 from time import time
 import numpy as np
+from operator import itemgetter
 
 from sklearn.datasets import load_files
 from sklearn.feature_extraction.text import Vectorizer
 from sklearn.preprocessing import Normalizer
 from sklearn.feature_selection import SelectKBest, chi2
+
+from sklearn import metrics
+from sklearn.externals import joblib
+from sklearn.cross_validation import KFold
 
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.linear_model import RidgeClassifier, LogisticRegression
@@ -23,65 +19,82 @@ from sklearn.naive_bayes import MultinomialNB, BernoulliNB, GaussianNB
 from sklearn.svm.sparse import LinearSVC, SVC
 from sklearn.multiclass import OneVsRestClassifier
 
-from sklearn import metrics
-
 import treelearn 
 
-from sklearn.cross_validation import KFold
 
 
 
 ###############################################################################
 # Preprocessing
 
-# Load categories
-categories = ['nolimitshare','notsell', 'notsellnotshare', 'sellshare', 'shareforexception', 
-            'shareforexceptionandconsent','shareonlyconsent',]
-
-
-# Load data
-print "Loading privacy policy dataset for categories:"
-print categories if categories else "all"
-data_set = load_files('ShareStatement/raw', categories = categories,
-                        shuffle = True, random_state = 42)
-print 'data loaded'
-print
-
-# Extract features
-print "Extracting features from the training dataset using a sparse vectorizer"
-t0 = time()
-vectorizer = Vectorizer(max_features=10000)
-X = vectorizer.fit_transform(data_set.data)
-X = Normalizer(norm="l2", copy=False).transform(X)
-
+# load data and initialize classification variables
+# data_set = joblib.load('models/data_set_origin.pkl')
+# data_set = joblib.load('models/data_set_pos_selected.pkl')
+data_set = joblib.load('models/data_set_pos_tagged.pkl')
+categories = data_set.target_names
 y = data_set.target
 
-# # # feature selection
-ch2 = SelectKBest(chi2, k = 80)
+# Extract features
+vectorizer = Vectorizer(max_features=10000)
+
+# Engineering nGram
+# vectorizer.analyzer.max_n = 2
+
+# Engineering stopword
+# vectorizer.analyzer.stop_words = set([])
+vectorizer.analyzer.stop_words = set(["amazon", "com", "inc", "emc", "alexa", "realnetworks", "google", "linkedin",
+                                    "fox", "zynga", "ea", "yahoo", "travelzoo", "kaltura", "2co", "ign", "blizzard"])
+# vectorizer.analyzer.stop_words = set(["we", "do", "you", "your", "the", "that", "this", 
+#                                     "is", "was", "are", "were", "being", "be", "been",
+#                                     "for", "of", "as", "in",  "to", "at", "by",
+#                                     # "or", "and",
+#                                     "ve",
+#                                     "amazon", "com", "inc", "emc", "alexa", "realnetworks", "google", "linkedin",
+#                                     "fox", "zynga", "ea", "yahoo", "travelzoo", "kaltura", "2co", "ign", "blizzard"])
+
+X = vectorizer.fit_transform(data_set.data)
+# X = Normalizer(norm="l2", copy=False).transform(X)
+
+# get back the terms of all training samples from Vectorizor
+terms = vectorizer.inverse_transform(X)
+print terms[0]
+
+# # Build dictionary after vectorizer is fit
+# print vectorizer.vocabulary
+vocabulary = np.array([t for t, i in sorted(vectorizer.vocabulary.iteritems(), key=itemgetter(1))])
+
+# Engineering feature selection
+ch2 = SelectKBest(chi2, k = 110)
 X = ch2.fit_transform(X, y)
 
 # X = X.toarray()
 # X = X.todense()
 
-print type(X)
-
 n_samples, n_features = X.shape
-print "done in %fs" % (time() - t0)
 print "n_samples: %d, n_features: %d" % (n_samples, n_features)
 print
 
 
+
+
+
+
+
+
+
+
+
 ###############################################################################
-# Test a classifier using K-fold Cross Validation
+# Test classifier using K-fold Cross Validation
 
 # Setup 10 fold cross validation
-num_fold = 3
+num_fold = 5
 kf = KFold(n_samples, k=num_fold, indices=True)
 
 # Note: NBs are not working
 # clf = DecisionTreeClassifier(max_depth=10, min_split=2)
-# clf = BernoulliNB(alpha=.1)
-clf = MultinomialNB(alpha=.01)
+clf = BernoulliNB(alpha=.1)
+# clf = MultinomialNB(alpha=.01)
 # clf = OneVsRestClassifier(LogisticRegression(penalty='l2'))
 # clf = KNeighborsClassifier(n_neighbors=3)
 # clf = RidgeClassifier(tol=1e-1)
@@ -106,34 +119,39 @@ for train_index, test_index in kf:
     X_train, X_test = X[train_index], X[test_index]
     y_train, y_test = y[train_index], y[test_index]
 
+    # fit and predict
     clf.fit(X_train, y_train)
-    train_time = time() - t0
-
     pred = clf.predict(X_test)
-    test_time = time() - t0
 
     # metrics
-    f1_score = metrics.f1_score(y_test, pred)
+    f1_score  = metrics.f1_score(y_test, pred)
     acc_score = metrics.zero_one_score(y_test, pred)
     pre_score = metrics.precision_score(y_test, pred)
     rec_score = metrics.recall_score(y_test, pred)
-    f1_all += f1_score
+    f1_all  += f1_score
     acc_all += acc_score
     pre_all += pre_score
     rec_all += rec_score
 
-    print data_set.target_names
-    print metrics.classification_report(y_test, pred)
-    print metrics.confusion_matrix(y_test, pred)
+    # print data_set.target_names
+    # print metrics.classification_report(y_test, pred)
+    # print metrics.confusion_matrix(y_test, pred)
 
-f1_all = f1_all/num_fold
+    # # print out top words for each category
+    # for i, category in enumerate(categories):
+    #             top10 = np.argsort(clf.coef_[i, :])[-10:]
+    #             print "%s: %s" % (category, " ".join(vocabulary[top10]))
+    #             print
+    # print
+    # print
+
+f1_all  = f1_all/num_fold
 acc_all = acc_all/num_fold
 pre_all = pre_all/num_fold
 rec_all = rec_all/num_fold
 
-print
 print clf
 print "average f1-score:   %0.5f" % f1_all
-print "average accuracy:   %0.5f" % acc_all
+# print "average accuracy:   %0.5f" % acc_all
 print "average precision:  %0.5f" % pre_all
 print "averege recall:     %0.5f" % rec_all
