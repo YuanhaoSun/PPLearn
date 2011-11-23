@@ -16,6 +16,7 @@ from sklearn.linear_model import RidgeClassifier, LogisticRegression
 from sklearn.linear_model.sparse import SGDClassifier
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.naive_bayes import MultinomialNB, BernoulliNB, GaussianNB
+from sklearn.lda import LDA
 from sklearn.svm.sparse import LinearSVC, SVC
 from sklearn.multiclass import OneVsRestClassifier
 
@@ -28,11 +29,15 @@ import treelearn
 # Preprocessing
 
 # load data and initialize classification variables
-# data_set = joblib.load('models/data_set_origin.pkl')
+data_set = joblib.load('models/data_set_origin.pkl')
 # data_set = joblib.load('models/data_set_pos_selected.pkl')
 # data_set = joblib.load('models/data_set_pos_tagged.pkl')
 # data_set = joblib.load('models/data_set_pos_bagged.pkl')
-data_set = joblib.load('models/data_set_sem_firstsense.pkl')
+# data_set = joblib.load('models/data_set_sem_firstsense.pkl')
+# data_set = joblib.load('models/data_set_sem_internal_sentence_wsd.pkl')
+# data_set = joblib.load('models/data_set_sem_corpus_sentence_wsd.pkl')
+# data_set = joblib.load('models/data_set_sem_corpus_word_wsd.pkl')
+# data_set = joblib.load('models/data_set_sem_internal_word_wsd.pkl')
 categories = data_set.target_names
 y = data_set.target
 
@@ -71,8 +76,8 @@ X = vectorizer.fit_transform(data_set.data)
 vocabulary = np.array([t for t, i in sorted(vectorizer.vocabulary.iteritems(), key=itemgetter(1))])
 
 # # Engineering feature selection
-ch2 = SelectKBest(chi2, k = 90)
-X = ch2.fit_transform(X, y)
+# ch2 = SelectKBest(chi2, k = 120)
+# X = ch2.fit_transform(X, y)
 
 # X = X.toarray()
 # X = X.todense()
@@ -96,11 +101,12 @@ print
 
 # Setup 10 fold cross validation
 num_fold = n_samples # leave-one-out
-# num_fold = 10
+# num_fold = 5
 kf = KFold(n_samples, k=num_fold, indices=True)
 
 # Note: NBs are not working
 # clf = DecisionTreeClassifier(max_depth=10, min_split=2)
+# clf = LDA() # not working with >2D
 clf = BernoulliNB(alpha=.1)
 # clf = MultinomialNB(alpha=.01)
 # clf = OneVsRestClassifier(LogisticRegression(penalty='l2'))
@@ -141,9 +147,9 @@ for train_index, test_index in kf:
     pre_all += pre_score
     rec_all += rec_score
 
-    # print data_set.target_names
-    # print metrics.classification_report(y_test, pred)
-    # print metrics.confusion_matrix(y_test, pred)
+    print data_set.target_names
+    print metrics.classification_report(y_test, pred)
+    print metrics.confusion_matrix(y_test, pred)
 
     # # print out top words for each category
     # for i, category in enumerate(categories):
