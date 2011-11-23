@@ -18,7 +18,7 @@ from nltk.corpus import wordnet_ic
 
 def select_by_pos(line_list):
     """
-    Input: line_list (list of strings(sentences/documents))
+    Input: line_list (list of strings(sentences/documents)) - e.g. dataset.data
 
     Iterates over all terms in lines, select terms with meaningful type of POS
 
@@ -55,7 +55,7 @@ def select_by_pos(line_list):
 
 def pos_tagging(line_list):
     """
-    Input: line_list (list of strings(sentences/documents))
+    Input: line_list (list of strings(sentences/documents)) - e.g. dataset.data
 
     Iterates over all terms in lines, add POS tag to words.
     E.g. 'said' -> ('said', 'VD') -> saidVD
@@ -91,7 +91,7 @@ def pos_tagging(line_list):
 
 def pos_bagging(line_list):
     """
-    Input: line_list (list of strings(sentences/documents))
+    Input: line_list (list of strings(sentences/documents)) - e.g. dataset.data
 
     Use POS tags to replace all words
 
@@ -126,9 +126,10 @@ def pos_bagging(line_list):
 
 def sem_firstsense(line_list):
     """
-    Input: line_list (list of strings(sentences/documents))
+    Input: line_list (list of strings(sentences/documents)) - e.g. dataset.data
 
-    Use POS tags to replace all words
+    Get a list of synsets or terms, synsets for the terms whic have synsets, term for the ones don't
+    Use first senses
 
     Return: synset_list (list of strings(terms that meets the POS criteria))
     """
@@ -146,7 +147,155 @@ def sem_firstsense(line_list):
         line_token = wt(nopunct_line)
         # list of first-sense synsets
         synset_list = reduce(lambda x,y:x+y, [ [wn.synsets(x)[0]] for x in line_token if wn.synsets(x) ])
-        # format synset into term, e.g. 
+        # format synset into term, e.g. Synset.share.v.1 -> sharev1
+        synset_formatted_list = []
+        for synset in synset_list:
+            formatted_term = re.sub('[^A-Za-z0-9]+', '', str(synset))
+            formatted_term = formatted_term.lstrip('Synset')
+            synset_formatted_list.append(formatted_term)
+        # list of terms without synset defination
+        nonsynset_list = [ x for x in line_token if not wn.synsets(x)]
+        # add synset list and nonsynset list together
+        total_synset_list = synset_formatted_list + nonsynset_list
+        # back to sentence as a string
+        total_synset_sentence = ' '.join(total_synset_list)
+        total_synset_sentence_list.append(total_synset_sentence)
+    return total_synset_sentence_list
+
+
+
+def internal_word_max_WSD(sentence, word):
+    """
+    Auxiliary function for sem_wsd()
+
+    Input: a sentence and a word in the sentence,
+            sentence is a list of words, not a string
+
+    Return: synset(sense) of the word that maximize one similarity with another word in the sentence
+
+    Derived from code at http://www.jaist.ac.jp/~s1010205/sitemap-2/styled-7/
+    """    
+    wordsynsets = wn.synsets(word)
+    bestScore = 0.0
+    result = None
+    for synset in wordsynsets:
+        for w in sentence:
+            score = 0.0
+            for wsynset in wn.synsets(w):
+                sim = wn.path_similarity(wsynset, synset)
+                if(sim == None):
+                    continue
+                else:
+                    score += sim
+            if (score > bestScore):
+                bestScore = score
+                result = synset
+    return result
+
+
+def internal_sentence_max_WSD(sentence, word):
+    """
+    Auxiliary function for sem_wsd()
+
+    Input: a sentence and a word in the sentence,
+            sentence is a list of words, not a string
+    
+    Return: synset(sense) of the word that maximize similarity with all other synsets in the sentence
+    """    
+    wordsynsets = wn.synsets(word)
+    bestScore = 0.0
+    result = None
+    for synset in wordsynsets:
+        score = 0.0
+        for w in sentence:
+            for wsynset in wn.synsets(w):
+                sim = wn.path_similarity(wsynset, synset)
+                if(sim == None):
+                    continue
+                else:
+                    score += sim
+        if (score > bestScore):
+            bestScore = score
+            result = synset
+    return result
+
+
+
+def sem_wsd_sentence(line_list):
+    """
+    Input: line_list (list of strings(sentences/documents)) - e.g. dataset.data
+
+    Get a list of synsets or terms, synsets for the terms whic have synsets, term for the ones don't
+    Use internal maximization on sentence either internal word max or internal sentence max
+
+    Return: synset_list (list of strings(terms that meets the POS criteria))
+    """
+    total_synset_sentence_list = []
+    for i, line in enumerate(line_list):
+        # linercase
+        line = line.lower()
+        # remove punctuation
+        # below method will simply remove punctuation, but mistakes such as amazon.com => amazoncom
+        # nopunct_line = ''.join([c for c in line 
+                                            # if re.match("[a-z\-\' \n\t]", c)])
+        # this solve the problem above:
+        nopunct_line = re.sub('[^A-Za-z0-9]+', ' ', line)                                            
+        # tokenize
+        line_token = wt(nopunct_line)
+        # list of wsd synsets
+        # synset_list = reduce(lambda x,y:x+y, [ [internal_sentence_max_WSD(line_token, x)] for x in line_token if wn.synsets(x) ])
+        synset_list = reduce(lambda x,y:x+y, [ [internal_word_max_WSD(line_token, x)] for x in line_token if wn.synsets(x) ])
+        # format synset into term, e.g. from Synset.share.v.1 -> sharev1
+        synset_formatted_list = []
+        for synset in synset_list:
+            formatted_term = re.sub('[^A-Za-z0-9]+', '', str(synset))
+            formatted_term = formatted_term.lstrip('Synset')
+            synset_formatted_list.append(formatted_term)
+        # list of terms without synset defination
+        nonsynset_list = [ x for x in line_token if not wn.synsets(x)]
+        # add synset list and nonsynset list together
+        total_synset_list = synset_formatted_list + nonsynset_list
+        # back to sentence as a string
+        total_synset_sentence = ' '.join(total_synset_list)
+        total_synset_sentence_list.append(total_synset_sentence)
+    return total_synset_sentence_list
+
+
+def sem_wsd_corpus(line_list):
+    """
+    Input: line_list (list of strings(sentences/documents)) - e.g. dataset.data
+
+    Get a list of synsets or terms, synsets for the terms whic have synsets, term for the ones don't
+    Use internal maximization on corpus either internal word max or internal sentence max
+
+    Return: synset_list (list of strings(terms that meets the POS criteria))
+    """
+    # get a term based corpus list for compute internal corpus maximization WSD
+    corpus_list = []
+    for line in line_list:
+        line = line.lower()
+        nopunct_line = re.sub('[^A-Za-z0-9]+', ' ', line)
+        line_token = wt(nopunct_line)
+        corpus_list = corpus_list+line_token
+    corpus_list = list(set(corpus_list))
+
+    # start
+    total_synset_sentence_list = []
+    for i, line in enumerate(line_list):
+        # linercase
+        line = line.lower()
+        # remove punctuation
+        # below method will simply remove punctuation, but mistakes such as amazon.com => amazoncom
+        # nopunct_line = ''.join([c for c in line 
+                                            # if re.match("[a-z\-\' \n\t]", c)])
+        # this solve the problem above:
+        nopunct_line = re.sub('[^A-Za-z0-9]+', ' ', line)
+        # tokenize
+        line_token = wt(nopunct_line)
+        # list of wsd synsets
+        # synset_list = reduce(lambda x,y:x+y, [ [internal_sentence_max_WSD(corpus_list, x)] for x in line_token if wn.synsets(x) ])
+        synset_list = reduce(lambda x,y:x+y, [ [internal_word_max_WSD(corpus_list, x)] for x in line_token if wn.synsets(x) ])
+        # format synset into term, e.g. from Synset.share.v.1 -> sharev1
         synset_formatted_list = []
         for synset in synset_list:
             formatted_term = re.sub('[^A-Za-z0-9]+', '', str(synset))
@@ -164,7 +313,16 @@ def sem_firstsense(line_list):
 
 
 
+
+
+
+
+
+
+
+
 # # Save original dataset
+# # Used only once if no change in training set
 # 
 # # Load categories
 # categories = ['nolimitshare','notsell', 'notsellnotshare', 'sellshare', 'shareforexception', 
@@ -218,8 +376,25 @@ y = data_set.target
 # joblib.dump(data_set, 'models/data_set_sem_firstsense.pkl')
 
 
+# # Feature engineering using WordNet with internal sentence maximization WSD
+# # These lines only need to be used once, and save the POS-bagged data_set
+# tagged_data = sem_wsd_sentence(data_set.data)
+# data_set.data = tagged_data
+# joblib.dump(data_set, 'models/data_set_sem_internal_word_wsd.pkl') # when using internal_word_max_WSD
+# joblib.dump(data_set, 'models/data_set_sem_internal_sentence_wsd.pkl') # when using internal_sentence_max_WSD
 
-
+# # Feature engineering using WordNet with internal corpus maximization WSD
+# # These lines only need to be used once, and save the POS-bagged data_set
+# print data_set.data[9:12]
+# t0 = time()
+# tagged_data = sem_wsd_corpus(data_set.data)
+# print "Done in %fs" % (time() - t0)
+# # time = 1105.18 s
+# data_set.data = tagged_data
+# print data_set.data[9:12]
+# print len(data_set.data)
+# joblib.dump(data_set, 'models/data_set_sem_corpus_word_wsd.pkl') # when using internal_word_max_WSD
+# joblib.dump(data_set, 'models/data_set_sem_corpus_sentence_wsd.pkl') # when using internal_sentence_max_WSD
 
 
 
