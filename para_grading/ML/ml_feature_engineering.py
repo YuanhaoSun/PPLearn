@@ -89,9 +89,77 @@ def pos_tagging(line_list):
     return tagged_list
 
 
+def pos_bagging(line_list):
+    """
+    Input: line_list (list of strings(sentences/documents))
+
+    Use POS tags to replace all words
+
+    Return: tagged_list (list of strings(terms that meets the POS criteria))
+    """
+    bagged_list = []
+    for i, line in enumerate(line_list):
+        # linercase
+        line = line.lower()
+        # remove punctuation
+        # below method will simply remove punctuation, but mistakes such as amazon.com => amazoncom
+        # nopunct_line = ''.join([c for c in line 
+                                            # if re.match("[a-z\-\' \n\t]", c)])
+        # this solve the problem above:
+        nopunct_line = re.sub('[^A-Za-z0-9]+', ' ', line)                                            
+        # tokenize
+        line_token = wt(nopunct_line)
+        # POS 
+        pos_line = pos_tag(line_token)
+        # filter line using POS info
+        # only remain verbs, nouns, adverbs, adjectives
+        bagged_line = []
+        for tagged_tuple in pos_line:
+            term = tagged_tuple[0]
+            tag  = tagged_tuple[1]
+            bagged_line.append(tag)
+        # back to sentence as a string
+        bagged_sentence = ' '.join(bagged_line)
+        bagged_list.append(bagged_sentence)
+    return bagged_list
 
 
+def sem_firstsense(line_list):
+    """
+    Input: line_list (list of strings(sentences/documents))
 
+    Use POS tags to replace all words
+
+    Return: synset_list (list of strings(terms that meets the POS criteria))
+    """
+    total_synset_sentence_list = []
+    for i, line in enumerate(line_list):
+        # linercase
+        line = line.lower()
+        # remove punctuation
+        # below method will simply remove punctuation, but mistakes such as amazon.com => amazoncom
+        # nopunct_line = ''.join([c for c in line 
+                                            # if re.match("[a-z\-\' \n\t]", c)])
+        # this solve the problem above:
+        nopunct_line = re.sub('[^A-Za-z0-9]+', ' ', line)                                            
+        # tokenize
+        line_token = wt(nopunct_line)
+        # list of first-sense synsets
+        synset_list = reduce(lambda x,y:x+y, [ [wn.synsets(x)[0]] for x in line_token if wn.synsets(x) ])
+        # format synset into term, e.g. 
+        synset_formatted_list = []
+        for synset in synset_list:
+            formatted_term = re.sub('[^A-Za-z0-9]+', '', str(synset))
+            formatted_term = formatted_term.lstrip('Synset')
+            synset_formatted_list.append(formatted_term)
+        # list of terms without synset defination
+        nonsynset_list = [ x for x in line_token if not wn.synsets(x)]
+        # add synset list and nonsynset list together
+        total_synset_list = synset_formatted_list + nonsynset_list
+        # back to sentence as a string
+        total_synset_sentence = ' '.join(total_synset_list)
+        total_synset_sentence_list.append(total_synset_sentence)
+    return total_synset_sentence_list
 
 
 
@@ -130,10 +198,29 @@ y = data_set.target
 
 # # Feature engineering using POS tags
 # # Add POS tags to all words, e.g. 'said' -> 'saidVD'
-# # These lines only need to be used once, and save the POS-selected data_set
+# # These lines only need to be used once, and save the POS-tagged data_set
 # tagged_data = pos_tagging(data_set.data)
 # data_set.data = tagged_data
 # joblib.dump(data_set, 'models/data_set_pos_tagged.pkl')
+
+# # Feature engineering using POS bag
+# # Use POS tags to replace all words
+# # These lines only need to be used once, and save the POS-bagged data_set
+# tagged_data = pos_bagging(data_set.data)
+# data_set.data = tagged_data
+# joblib.dump(data_set, 'models/data_set_pos_bagged.pkl')
+
+
+# # Feature engineering using WordNet first sense
+# # These lines only need to be used once, and save the POS-bagged data_set
+# tagged_data = sem_firstsense(data_set.data)
+# data_set.data = tagged_data
+# joblib.dump(data_set, 'models/data_set_sem_firstsense.pkl')
+
+
+
+
+
 
 
 # # Extract features
@@ -147,7 +234,7 @@ y = data_set.target
 # # vectorizer.analyzer.stop_words = set([])
 # vectorizer.analyzer.stop_words = set(["amazon", "com", "inc", "emc", "alexa", "realnetworks", "google", "linkedin",
 #                                     "fox", "zynga", "ea", "yahoo", "travelzoo", "kaltura", "2co", "ign", "blizzard",
-#                                     "jobstreetcom", "surveymonkey"])
+#                                     "jobstreetcom", "surveymonkey", "microsoft"])
 # # vectorizer.analyzer.stop_words = set(["we", "do", "you", "your", "the", "that", "this", 
 # #                                     "is", "was", "are", "were", "being", "be", "been",
 # #                                     "for", "of", "as", "in",  "to", "at", "by",
@@ -155,7 +242,7 @@ y = data_set.target
 # #                                     "ve",
 # #                                     "amazon", "com", "inc", "emc", "alexa", "realnetworks", "google", "linkedin",
 # #                                     "fox", "zynga", "ea", "yahoo", "travelzoo", "kaltura", "2co", "ign", "blizzard",
-# #                                     "jobstreetcom", "surveymonkey"])
+# #                                     "jobstreetcom", "surveymonkey", "microsoft"])
 
 # X = vectorizer.fit_transform(data_set.data)
 # # X = Normalizer(norm="l2", copy=False).transform(X)

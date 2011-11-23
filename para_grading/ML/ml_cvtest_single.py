@@ -30,7 +30,9 @@ import treelearn
 # load data and initialize classification variables
 # data_set = joblib.load('models/data_set_origin.pkl')
 # data_set = joblib.load('models/data_set_pos_selected.pkl')
-data_set = joblib.load('models/data_set_pos_tagged.pkl')
+# data_set = joblib.load('models/data_set_pos_tagged.pkl')
+# data_set = joblib.load('models/data_set_pos_bagged.pkl')
+data_set = joblib.load('models/data_set_sem_firstsense.pkl')
 categories = data_set.target_names
 y = data_set.target
 
@@ -41,30 +43,35 @@ vectorizer = Vectorizer(max_features=10000)
 # vectorizer.analyzer.max_n = 2
 
 # Engineering stopword
-# vectorizer.analyzer.stop_words = set([])
-vectorizer.analyzer.stop_words = set(["amazon", "com", "inc", "emc", "alexa", "realnetworks", "google", "linkedin",
-                                    "fox", "zynga", "ea", "yahoo", "travelzoo", "kaltura", "2co", "ign", "blizzard"])
+vectorizer.analyzer.stop_words = set([])
+# vectorizer.analyzer.stop_words = set(["amazon", "com", "inc", "emcnn", "alexann", "realnetworks", "googlenn", "linkedinnn",
+#                                     "fox", "zyngann", "eann", "yahoorb", "travelzoo", "kalturann", "2cocd", "ign", "blizzardnn",
+#                                     "jobstreetcom", "surveymonkeynn", "microsoftnn"])
+# vectorizer.analyzer.stop_words = set(["amazon", "com", "inc", "emc", "alexa", "realnetworks", "google", "linkedin",
+#                                     "fox", "zynga", "ea", "yahoo", "travelzoo", "kaltura", "2co", "ign", "blizzard",
+#                                     "jobstreetcom", "surveymonkey", "microsoft"])
 # vectorizer.analyzer.stop_words = set(["we", "do", "you", "your", "the", "that", "this", 
 #                                     "is", "was", "are", "were", "being", "be", "been",
 #                                     "for", "of", "as", "in",  "to", "at", "by",
 #                                     # "or", "and",
 #                                     "ve",
 #                                     "amazon", "com", "inc", "emc", "alexa", "realnetworks", "google", "linkedin",
-#                                     "fox", "zynga", "ea", "yahoo", "travelzoo", "kaltura", "2co", "ign", "blizzard"])
+#                                     "fox", "zynga", "ea", "yahoo", "travelzoo", "kaltura", "2co", "ign", "blizzard",
+#                                     "jobstreetcom", "surveymonkey", "microsoft"])
 
 X = vectorizer.fit_transform(data_set.data)
 # X = Normalizer(norm="l2", copy=False).transform(X)
 
 # get back the terms of all training samples from Vectorizor
-terms = vectorizer.inverse_transform(X)
-print terms[0]
+# terms = vectorizer.inverse_transform(X)
+# print terms[0]
 
 # # Build dictionary after vectorizer is fit
-# print vectorizer.vocabulary
+# # print vectorizer.vocabulary
 vocabulary = np.array([t for t, i in sorted(vectorizer.vocabulary.iteritems(), key=itemgetter(1))])
 
-# Engineering feature selection
-ch2 = SelectKBest(chi2, k = 110)
+# # Engineering feature selection
+ch2 = SelectKBest(chi2, k = 90)
 X = ch2.fit_transform(X, y)
 
 # X = X.toarray()
@@ -88,7 +95,8 @@ print
 # Test classifier using K-fold Cross Validation
 
 # Setup 10 fold cross validation
-num_fold = 5
+num_fold = n_samples # leave-one-out
+# num_fold = 10
 kf = KFold(n_samples, k=num_fold, indices=True)
 
 # Note: NBs are not working
@@ -99,7 +107,7 @@ clf = BernoulliNB(alpha=.1)
 # clf = KNeighborsClassifier(n_neighbors=3)
 # clf = RidgeClassifier(tol=1e-1)
 # clf = SGDClassifier(alpha=.0001, n_iter=50, penalty="elasticnet")
-# clf = LinearSVC(loss='l2', penalty='l1', C=1000, dual=False, tol=1e-3)
+# clf = LinearSVC(loss='l2', penalty='l2', C=1000, dual=False, tol=1e-3)
 # Add Random Forest from treelearn library
 # clf = treelearn.ClassifierEnsemble(bagging_percent=0.5, base_model = treelearn.RandomizedTree(), num_models=200,
 #             stacking_model=SVC(C=1024, kernel='rbf', degree=3, gamma=0.001, probability=True))
@@ -139,8 +147,8 @@ for train_index, test_index in kf:
 
     # # print out top words for each category
     # for i, category in enumerate(categories):
-    #             top10 = np.argsort(clf.coef_[i, :])[-10:]
-    #             print "%s: %s" % (category, " ".join(vocabulary[top10]))
+    #             top15 = np.argsort(clf.coef_[i, :])[-5:]
+    #             print "%s: %s" % (category, " ".join(vocabulary[top15]))
     #             print
     # print
     # print
