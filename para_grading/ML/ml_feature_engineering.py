@@ -9,12 +9,146 @@ from sklearn.preprocessing import Normalizer
 from sklearn.feature_selection import SelectKBest, chi2
 from sklearn.externals import joblib
 
-from nltk.corpus import wordnet as wn 
-from nltk import word_tokenize as wt
-from nltk import pos_tag
+from nltk.corpus import wordnet as wn
 from nltk.corpus import stopwords
 from nltk.corpus import wordnet_ic
+from nltk import word_tokenize as wt
+from nltk import pos_tag
+from nltk import PorterStemmer 
+from nltk import WordNetLemmatizer
 
+
+
+
+###############################################################################
+# Stemming and lemmatizing
+
+def stemming(line_list):
+    """
+    Input: line_list (list of strings(sentences/documents)) - e.g. dataset.data
+
+    Iterates over all terms in lines, stem them
+
+    Return: stemmed_list (list of strings(terms that stemmed))
+    """
+    stemmed_list = []
+    stemmer = PorterStemmer()
+    for i, line in enumerate(line_list):
+        # linercase
+        line = line.lower()
+        # remove punctuation
+        # below method will simply remove punctuation, but mistakes such as amazon.com => amazoncom
+        # nopunct_line = ''.join([c for c in line 
+                                            # if re.match("[a-z\-\' \n\t]", c)])
+        # this solve the problem above:
+        nopunct_line = re.sub('[^A-Za-z0-9]+', ' ', line)                                            
+        # tokenize
+        line_token = wt(nopunct_line)
+        # list to store stemmed terms
+        stemmed_line = []
+        for term in line_token:
+            term = stemmer.stem_word(term)
+            stemmed_line.append(term)
+        # back to sentence as a string
+        stemmed_sentence = ' '.join(stemmed_line)
+        stemmed_list.append(stemmed_sentence)
+    return stemmed_list
+
+
+def lemmatizing(line_list):
+    """
+    Input: line_list (list of strings(sentences/documents)) - e.g. dataset.data
+
+    Iterates over all terms in lines, lemmatize them using WordNetLemmatizer()
+
+    Return: lemmatized_list (list of strings(terms that stemmed))
+    """
+    lemmatized_list = []
+    lemmatizer = WordNetLemmatizer()
+    for i, line in enumerate(line_list):
+        # linercase
+        line = line.lower()
+        # remove punctuation
+        # below method will simply remove punctuation, but mistakes such as amazon.com => amazoncom
+        # nopunct_line = ''.join([c for c in line 
+                                            # if re.match("[a-z\-\' \n\t]", c)])
+        # this solve the problem above:
+        nopunct_line = re.sub('[^A-Za-z0-9]+', ' ', line)                                            
+        # tokenize
+        line_token = wt(nopunct_line)
+        # # POS 
+        # pos_line = pos_tag(line_token)
+        # stemming
+        lemmatized_line = []
+        for term in line_token:
+            term = lemmatizer.lemmatize(term)
+            lemmatized_line.append(term)
+        # back to sentence as a string
+        lemmatized_sentence = ' '.join(lemmatized_line)
+        lemmatized_list.append(lemmatized_sentence)
+    return lemmatized_list
+
+
+def wn_lemmatize(lemma):
+    """
+    Auxiliary function for pos_lemmatizing (below)
+
+    Lemmatize the supplied (word, pos) pair using
+    nltk.stem.WordNetLemmatizer. If the tag corresponds to a
+    WordNet tag, then we convert to that one and use it, else we
+    just use the strong for lemmatizing.
+    """        
+    string, tag = lemma
+    string = string.lower()
+    tag = tag.lower()
+    wnl = WordNetLemmatizer()
+    if tag.startswith('v'):    tag = 'v'
+    elif tag.startswith('n'):  tag = 'n'
+    elif tag.startswith('j'):  tag = 'a'
+    elif tag.startswith('rb'): tag = 'r'
+    if tag in ('a', 'n', 'r', 'v'):        
+        return wnl.lemmatize(string, tag)
+    else:
+        return wnl.lemmatize(string) 
+
+
+def pos_lemmatizing(line_list):
+    """
+    Input: line_list (list of strings(sentences/documents)) - e.g. dataset.data
+
+    Iterates over all terms in lines, lemmatize them using WordNetLemmatizer()
+    Terms are pre-processed using POS tagging to improve accuracy
+
+    Return: lemmatized_list (list of strings(terms that stemmed))
+    """
+    lemmatized_list = []
+    for i, line in enumerate(line_list):
+        # linercase
+        line = line.lower()
+        # remove punctuation
+        # below method will simply remove punctuation, but mistakes such as amazon.com => amazoncom
+        # nopunct_line = ''.join([c for c in line 
+                                            # if re.match("[a-z\-\' \n\t]", c)])
+        # this solve the problem above:
+        nopunct_line = re.sub('[^A-Za-z0-9]+', ' ', line)                                            
+        # tokenize
+        line_token = wt(nopunct_line)
+        # POS 
+        pos_line = pos_tag(line_token)
+        # list for all lemmatized terms
+        lemmatized_line = []
+        for lemma in pos_line:
+            term = wn_lemmatize(lemma)
+            lemmatized_line.append(term)
+        # back to sentence as a string
+        lemmatized_sentence = ' '.join(lemmatized_line)
+        lemmatized_list.append(lemmatized_sentence)
+    return lemmatized_list
+
+
+
+###############################################################################
+# POS tagging and bagging
 
 def select_by_pos(line_list):
     """
@@ -123,6 +257,10 @@ def pos_bagging(line_list):
         bagged_list.append(bagged_sentence)
     return bagged_list
 
+
+
+###############################################################################
+# Semantic tagging - bag of synsets
 
 def sem_firstsense(line_list):
     """
@@ -315,37 +453,81 @@ def sem_wsd_corpus(line_list):
 
 
 
-
-
-
-
-
-
 # # Save original dataset
-# # Used only once if no change in training set
-# 
+# # Used only once, otherwise if there is change in data set
 # # Load categories
 # categories = ['nolimitshare','notsell', 'notsellnotshare', 'sellshare', 'shareforexception', 
-#             'shareforexceptionandconsent','shareonlyconsent',]
+#             'shareforexceptionandconsent','shareonlyconsent', 'notsharemarketing']
 # # Load data
 # print "Loading privacy policy dataset for categories:"
 # print categories if categories else "all"
-# data_set = load_files('ShareStatement/raw', categories = categories,
+# data_train = load_files('../Dataset/ShareStatement/raw', categories = categories,
+#                         shuffle = True, random_state = 42)
+# data_test = load_files('../Dataset/ShareStatement/test', categories = categories,
 #                         shuffle = True, random_state = 42)
 # print 'data loaded'
+# print len(data_train.data)
+# print len(data_test.data)
 # print
 # # Save dataset
-# joblib.dump(data_set, 'models/data_set_origin.pkl')
-# print 'data_set_origin saved'
+# joblib.dump(data_train, '../Dataset/train_datasets/data_set_origin.pkl')
+# joblib.dump(data_test, '../Dataset/test_datasets/data_set_origin.pkl')
+# print 'data_set saved'
 # print
 
 
 
-# Load dataset
-data_set = joblib.load('models/data_set_origin.pkl')
-categories = data_set.target_names
-y = data_set.target
 
+# Load train dataset
+# data_set = joblib.load('../Dataset/train_datasets/data_set_origin.pkl')
+# Load test dataset
+# data_set = joblib.load('../Dataset/test_datasets/data_set_origin.pkl')
+
+
+# Timing experiments
+print data_set.data[9:12]
+t0 = time()
+processed_data = pos_lemmatizing(data_set.data)
+print "Done in %fs" % (time() - t0)
+data_set.data = processed_data
+print data_set.data[9:12]
+print len(data_set.data)
+
+
+
+# # Train datasets
+# joblib.dump(data_set, '../Dataset/train_datasets/data_set_stemmed.pkl')
+# joblib.dump(data_set, '../Dataset/train_datasets/data_set_lemmatized.pkl')
+# joblib.dump(data_set, '../Dataset/train_datasets/data_set_lemmatized_pos.pkl')
+# joblib.dump(data_set, '../Dataset/train_datasets/data_set_pos_selected.pkl')
+# joblib.dump(data_set, '../Dataset/train_datasets/data_set_pos_tagged.pkl')
+# joblib.dump(data_set, '../Dataset/train_datasets/data_set_pos_bagged.pkl')
+# joblib.dump(data_set, '../Dataset/train_datasets/data_set_sem_firstsense.pkl')
+# joblib.dump(data_set, '../Dataset/train_datasets/data_set_sem_internal_word_wsd.pkl') # when using internal_word_max_WSD
+# joblib.dump(data_set, '../Dataset/train_datasets/data_set_sem_internal_sentence_wsd.pkl') # when using internal_sentence_max_WSD
+# joblib.dump(data_set, '../Dataset/train_datasets/data_set_sem_corpus_word_wsd.pkl') # when using internal_word_max_WSD
+# joblib.dump(data_set, '../Dataset/train_datasets/data_set_sem_corpus_sentence_wsd.pkl') # when using internal_sentence_max_WSD
+#
+# 
+# # Test datasets
+# joblib.dump(data_set, '../Dataset/test_datasets/data_set_stemmed.pkl')
+# joblib.dump(data_set, '../Dataset/test_datasets/data_set_lemmatized.pkl')
+# joblib.dump(data_set, '../Dataset/test_datasets/data_set_lemmatized_pos.pkl')
+# joblib.dump(data_set, '../Dataset/test_datasets/data_set_pos_selected.pkl')
+# joblib.dump(data_set, '../Dataset/test_datasets/data_set_pos_tagged.pkl')
+# joblib.dump(data_set, '../Dataset/test_datasets/data_set_pos_bagged.pkl')
+# joblib.dump(data_set, '../Dataset/test_datasets/data_set_sem_firstsense.pkl')
+# joblib.dump(data_set, '../Dataset/test_datasets/data_set_sem_internal_word_wsd.pkl') # when using internal_word_max_WSD
+# joblib.dump(data_set, '../Dataset/test_datasets/data_set_sem_internal_sentence_wsd.pkl') # when using internal_sentence_max_WSD
+# joblib.dump(data_set, '../Dataset/test_datasets/data_set_sem_corpus_word_wsd.pkl') # when using internal_word_max_WSD
+# joblib.dump(data_set, '../Dataset/test_datasets/data_set_sem_corpus_sentence_wsd.pkl') # when using internal_sentence_max_WSD
+
+
+
+
+
+###############################################################################
+# Individual dumping (not necessary if use lines above)
 
 # # Feature selection using POS types
 # # Only keep verbs, nouns, adverbs, adjectives
@@ -385,57 +567,8 @@ y = data_set.target
 
 # # Feature engineering using WordNet with internal corpus maximization WSD
 # # These lines only need to be used once, and save the POS-bagged data_set
-# print data_set.data[9:12]
-# t0 = time()
 # tagged_data = sem_wsd_corpus(data_set.data)
-# print "Done in %fs" % (time() - t0)
-# # time = 1105.18 s
 # data_set.data = tagged_data
-# print data_set.data[9:12]
-# print len(data_set.data)
 # joblib.dump(data_set, 'models/data_set_sem_corpus_word_wsd.pkl') # when using internal_word_max_WSD
 # joblib.dump(data_set, 'models/data_set_sem_corpus_sentence_wsd.pkl') # when using internal_sentence_max_WSD
 
-
-
-# # Extract features
-# vectorizer = Vectorizer(max_features=10000)
-
-# # Engineering nGram
-# # vectorizer.analyzer.min_n = 1
-# # vectorizer.analyzer.max_n = 2
-
-# # Engineering stopword
-# # vectorizer.analyzer.stop_words = set([])
-# vectorizer.analyzer.stop_words = set(["amazon", "com", "inc", "emc", "alexa", "realnetworks", "google", "linkedin",
-#                                     "fox", "zynga", "ea", "yahoo", "travelzoo", "kaltura", "2co", "ign", "blizzard",
-#                                     "jobstreetcom", "surveymonkey", "microsoft"])
-# # vectorizer.analyzer.stop_words = set(["we", "do", "you", "your", "the", "that", "this", 
-# #                                     "is", "was", "are", "were", "being", "be", "been",
-# #                                     "for", "of", "as", "in",  "to", "at", "by",
-# #                                     # "or", "and",
-# #                                     "ve",
-# #                                     "amazon", "com", "inc", "emc", "alexa", "realnetworks", "google", "linkedin",
-# #                                     "fox", "zynga", "ea", "yahoo", "travelzoo", "kaltura", "2co", "ign", "blizzard",
-# #                                     "jobstreetcom", "surveymonkey", "microsoft"])
-
-# X = vectorizer.fit_transform(data_set.data)
-# # X = Normalizer(norm="l2", copy=False).transform(X)
-
-# # # get back the terms of all training samples from Vectorizor
-# # terms = vectorizer.inverse_transform(X)
-# # print terms[0]
-
-# # # Build dictionary after vectorizer is fit
-# # print vectorizer.vocabulary
-# # vocabulary = np.array([t for t, i in sorted(vectorizer.vocabulary.iteritems(), key=itemgetter(1))])
-
-# # Engineering feature selection
-# ch2 = SelectKBest(chi2, k = 90)
-# X = ch2.fit_transform(X, y)
-
-# # X = X.toarray()
-# # X = X.todense()
-
-# n_samples, n_features = X.shape
-# print "n_samples: %d, n_features: %d" % (n_samples, n_features)
