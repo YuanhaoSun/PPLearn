@@ -25,21 +25,43 @@ import treelearn
 
 
 
+
 ###############################################################################
 # Preprocessing
 
+
+# # Load from raw data
+# # Load categories
+# categories = ['nolimitshare','notsell', 'notsellnotshare', 'sellshare', 'shareforexception', 
+#             'shareforexceptionandconsent','shareonlyconsent', 'notsharemarketing']
+# # Load data
+# print "Loading privacy policy dataset for categories:"
+# print categories if categories else "all"
+# data_set = load_files('../Dataset/ShareStatement/raw', categories = categories,
+#                         shuffle = True, random_state = 42)
+# print 'data loaded'
+# print
+
+
+# load from pickle
 # load data and initialize classification variables
-data_set = joblib.load('models/data_set_origin.pkl')
-# data_set = joblib.load('models/data_set_pos_selected.pkl')
-# data_set = joblib.load('models/data_set_pos_tagged.pkl')
-# data_set = joblib.load('models/data_set_pos_bagged.pkl')
-# data_set = joblib.load('models/data_set_sem_firstsense.pkl')
-# data_set = joblib.load('models/data_set_sem_internal_sentence_wsd.pkl')
-# data_set = joblib.load('models/data_set_sem_corpus_sentence_wsd.pkl')
-# data_set = joblib.load('models/data_set_sem_corpus_word_wsd.pkl')
-# data_set = joblib.load('models/data_set_sem_internal_word_wsd.pkl')
+data_set = joblib.load('../Dataset/train_datasets/data_set_origin.pkl')
+# data_set = joblib.load('../Dataset/train_datasets/data_set_stemmed.pkl')
+# data_set = joblib.load('../Dataset/train_datasets/data_set_lemmatized.pkl')
+# data_set = joblib.load('../Dataset/train_datasets/data_set_lemmatized_pos.pkl')
+# data_set = joblib.load('../Dataset/train_datasets/data_set_pos_selected.pkl')
+# data_set = joblib.load('../Dataset/train_datasets/data_set_pos_tagged.pkl')
+# data_set = joblib.load('../Dataset/train_datasets/data_set_pos_bagged.pkl')
+# data_set = joblib.load('../Dataset/train_datasets/data_set_sem_firstsense.pkl')
+# data_set = joblib.load('../Dataset/train_datasets/data_set_sem_internal_sentence_wsd.pkl')
+# data_set = joblib.load('../Dataset/train_datasets/data_set_sem_corpus_sentence_wsd.pkl')
+# data_set = joblib.load('../Dataset/train_datasets/data_set_sem_corpus_word_wsd.pkl')
+# data_set = joblib.load('../Dataset/train_datasets/data_set_sem_internal_word_wsd.pkl')
 categories = data_set.target_names
+
+
 y = data_set.target
+
 
 # Extract features
 vectorizer = Vectorizer(max_features=10000)
@@ -48,13 +70,19 @@ vectorizer = Vectorizer(max_features=10000)
 # vectorizer.analyzer.max_n = 2
 
 # Engineering stopword
-vectorizer.analyzer.stop_words = set([])
-# vectorizer.analyzer.stop_words = set(["amazon", "com", "inc", "emcnn", "alexann", "realnetworks", "googlenn", "linkedinnn",
-#                                     "fox", "zyngann", "eann", "yahoorb", "travelzoo", "kalturann", "2cocd", "ign", "blizzardnn",
-#                                     "jobstreetcom", "surveymonkeynn", "microsoftnn"])
+# vectorizer.analyzer.stop_words = set([])
+vectorizer.analyzer.stop_words = set(["amazon", "com", "inc", "emcnn", "alexann", "realnetworks", "googlenn", "linkedinnn",
+                                    "fox", "zyngann", "eann", "yahoorb", "travelzoo", "kalturann", "2cocd", "ign", "blizzardnn",
+                                    "jobstreetcom", "surveymonkeynn", "microsoftnn", "wral", "spe", "t", "mobile", "opendns",
+                                    "bentley", "allvoices", "watson", "dyn", "ae", "dow", "jones", "webm", "toysrus", "bonnier",
+                                    "skype", "wnd", "landrover", "icue", "sei", "entersect", "padeals", "acs", "e",
+                                    "getty", "images", "winamp", "lionsgate", ])
 # vectorizer.analyzer.stop_words = set(["amazon", "com", "inc", "emc", "alexa", "realnetworks", "google", "linkedin",
 #                                     "fox", "zynga", "ea", "yahoo", "travelzoo", "kaltura", "2co", "ign", "blizzard",
-#                                     "jobstreetcom", "surveymonkey", "microsoft"])
+#                                     "jobstreetcom", "surveymonkey", "microsoft", "wral", "spe", "t", "mobile", "opendns",
+#                                     "bentley", "allvoices", "watson", "dyn", "ae", "dow", "jones", "webm", "toysrus", "bonnier",
+#                                     "skype", "wnd", "landrover", "icue", "sei", "entersect", "padeals", "acs", "e",
+#                                     "getty", "images", "winamp", "lionsgate", ])
 # vectorizer.analyzer.stop_words = set(["we", "do", "you", "your", "the", "that", "this", 
 #                                     "is", "was", "are", "were", "being", "be", "been",
 #                                     "for", "of", "as", "in",  "to", "at", "by",
@@ -62,7 +90,10 @@ vectorizer.analyzer.stop_words = set([])
 #                                     "ve",
 #                                     "amazon", "com", "inc", "emc", "alexa", "realnetworks", "google", "linkedin",
 #                                     "fox", "zynga", "ea", "yahoo", "travelzoo", "kaltura", "2co", "ign", "blizzard",
-#                                     "jobstreetcom", "surveymonkey", "microsoft"])
+#                                     "jobstreetcom", "surveymonkey", "microsoft", "wral", "spe", "t", "mobile", "opendns",
+#                                     "bentley", "allvoices", "watson", "dyn", "ae", "dow", "jones", "webm", "toysrus", "bonnier",
+#                                     "skype", "wnd", "landrover", "icue", "sei", "entersect", "padeals", "acs", "e",
+#                                     "getty", "images", "winamp", "lionsgate", ])
 
 X = vectorizer.fit_transform(data_set.data)
 # X = Normalizer(norm="l2", copy=False).transform(X)
@@ -76,8 +107,8 @@ X = vectorizer.fit_transform(data_set.data)
 vocabulary = np.array([t for t, i in sorted(vectorizer.vocabulary.iteritems(), key=itemgetter(1))])
 
 # # Engineering feature selection
-# ch2 = SelectKBest(chi2, k = 120)
-# X = ch2.fit_transform(X, y)
+ch2 = SelectKBest(chi2, k = 85)
+X = ch2.fit_transform(X, y)
 
 # X = X.toarray()
 # X = X.todense()
@@ -147,9 +178,9 @@ for train_index, test_index in kf:
     pre_all += pre_score
     rec_all += rec_score
 
-    print data_set.target_names
-    print metrics.classification_report(y_test, pred)
-    print metrics.confusion_matrix(y_test, pred)
+    # print data_set.target_names
+    # print metrics.classification_report(y_test, pred)
+    # print metrics.confusion_matrix(y_test, pred)
 
     # # print out top words for each category
     # for i, category in enumerate(categories):

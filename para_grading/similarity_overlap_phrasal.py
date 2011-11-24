@@ -68,7 +68,7 @@ def sim_overlap_phrasal(sentence1, sentence2):
 # list1 = load_sentences('data_not_sell')
 # list2 = load_sentences('data_sell_share')
 
-# sentence1 = list1[1]
+# sentence1 = list1[1]cd D
 # sentence2 = list2[3]
 
 # score = sim_overlap_phrasal(sentence1, sentence2)

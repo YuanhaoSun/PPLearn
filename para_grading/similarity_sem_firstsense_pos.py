@@ -11,7 +11,7 @@ from similarity_utils import load_sentences
 # Calculate sentence semantic similarity base on first sense heuristic using POS
 def sim_sem_firstsense_pos(sentence1, sentence2, metric=wn.path_similarity, ic=None):
     
-    # import stopwords 
+    # import stopwords
     sw = stopwords.words('english')
     # remove punctuation
     nopunct_sentence1 = ''.join([c for c in sentence1 
