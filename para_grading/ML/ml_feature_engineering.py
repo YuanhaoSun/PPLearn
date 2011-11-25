@@ -452,12 +452,13 @@ def sem_wsd_corpus(line_list):
 
 
 
-
+###############################################################################
 # # Save original dataset
+# 
 # # Used only once, otherwise if there is change in data set
 # # Load categories
-# categories = ['nolimitshare','notsell', 'notsellnotshare', 'sellshare', 'shareforexception', 
-#             'shareforexceptionandconsent','shareonlyconsent', 'notsharemarketing']
+# categories = ['nolimitshare', 'notsell', 'notsellnotshare', 'notsharemarketing', 'sellshare', 
+            # 'shareforexception', 'shareforexceptionandconsent', 'shareonlyconsent']
 # # Load data
 # print "Loading privacy policy dataset for categories:"
 # print categories if categories else "all"
@@ -465,36 +466,69 @@ def sem_wsd_corpus(line_list):
 #                         shuffle = True, random_state = 42)
 # data_test = load_files('../Dataset/ShareStatement/test', categories = categories,
 #                         shuffle = True, random_state = 42)
+# data_trouble = load_files('../Dataset/ShareStatement/trouble', categories = categories,
+                        # shuffle = True, random_state = 42)                        
 # print 'data loaded'
 # print len(data_train.data)
 # print len(data_test.data)
+# print len(data_trouble.data)
 # print
 # # Save dataset
 # joblib.dump(data_train, '../Dataset/train_datasets/data_set_origin.pkl')
 # joblib.dump(data_test, '../Dataset/test_datasets/data_set_origin.pkl')
+# joblib.dump(data_trouble, '../Dataset/trouble_datasets/data_set_origin.pkl')
 # print 'data_set saved'
 # print
 
 
 
+###############################################################################
+# # Feature Engineering and save to pickles
 
-# Load train dataset
+# 
+# Load original datasets
 # data_set = joblib.load('../Dataset/train_datasets/data_set_origin.pkl')
-# Load test dataset
 # data_set = joblib.load('../Dataset/test_datasets/data_set_origin.pkl')
+data_set = joblib.load('../Dataset/trouble_datasets/data_set_origin.pkl')
+
+# data_set = joblib.load('../Dataset/train_datasets/data_set_stemmed.pkl')
+# data_set = joblib.load('../Dataset/train_datasets/data_set_lemmatized.pkl')
+# data_set = joblib.load('../Dataset/train_datasets/data_set_lemmatized_pos.pkl')
 
 
 # Timing experiments
-print data_set.data[9:12]
+print data_set.data[2:5]
 t0 = time()
-processed_data = pos_lemmatizing(data_set.data)
+processed_data = stemming(data_set.data)
 print "Done in %fs" % (time() - t0)
 data_set.data = processed_data
-print data_set.data[9:12]
+print data_set.data[2:5]
 print len(data_set.data)
 
+# stemming
+# lemmatizing
+# pos_lemmatizing
+# select_by_pos
+# pos_tagging
+# pos_bagging
+# sem_firstsense
+# sem_wsd_sentence
+# sem_wsd_corpus
 
 
+# # Trouble datasets
+joblib.dump(data_set, '../Dataset/trouble_datasets/data_set_stemmed.pkl')
+# joblib.dump(data_set, '../Dataset/trouble_datasets/data_set_lemmatized.pkl')
+# joblib.dump(data_set, '../Dataset/trouble_datasets/data_set_lemmatized_pos.pkl')
+# joblib.dump(data_set, '../Dataset/trouble_datasets/data_set_pos_selected.pkl')
+# joblib.dump(data_set, '../Dataset/trouble_datasets/data_set_pos_tagged.pkl')
+# joblib.dump(data_set, '../Dataset/trouble_datasets/data_set_pos_bagged.pkl')
+# joblib.dump(data_set, '../Dataset/trouble_datasets/data_set_sem_firstsense.pkl')
+# joblib.dump(data_set, '../Dataset/trouble_datasets/data_set_sem_internal_word_wsd.pkl') # when using internal_word_max_WSD
+# joblib.dump(data_set, '../Dataset/trouble_datasets/data_set_sem_internal_sentence_wsd.pkl') # when using internal_sentence_max_WSD
+# joblib.dump(data_set, '../Dataset/trouble_datasets/data_set_sem_corpus_word_wsd.pkl') # when using internal_word_max_WSD
+# joblib.dump(data_set, '../Dataset/trouble_datasets/data_set_sem_corpus_sentence_wsd.pkl') # when using internal_sentence_max_WSD
+# 
 # # Train datasets
 # joblib.dump(data_set, '../Dataset/train_datasets/data_set_stemmed.pkl')
 # joblib.dump(data_set, '../Dataset/train_datasets/data_set_lemmatized.pkl')
@@ -521,6 +555,8 @@ print len(data_set.data)
 # joblib.dump(data_set, '../Dataset/test_datasets/data_set_sem_internal_sentence_wsd.pkl') # when using internal_sentence_max_WSD
 # joblib.dump(data_set, '../Dataset/test_datasets/data_set_sem_corpus_word_wsd.pkl') # when using internal_word_max_WSD
 # joblib.dump(data_set, '../Dataset/test_datasets/data_set_sem_corpus_sentence_wsd.pkl') # when using internal_sentence_max_WSD
+# 
+# 
 
 
 
