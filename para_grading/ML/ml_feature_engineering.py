@@ -76,8 +76,6 @@ def lemmatizing(line_list):
         nopunct_line = re.sub('[^A-Za-z0-9]+', ' ', line)                                            
         # tokenize
         line_token = wt(nopunct_line)
-        # # POS 
-        # pos_line = pos_tag(line_token)
         # stemming
         lemmatized_line = []
         for term in line_token:
@@ -125,14 +123,17 @@ def pos_lemmatizing(line_list):
     for i, line in enumerate(line_list):
         # linercase
         line = line.lower()
-        # remove punctuation
-        # below method will simply remove punctuation, but mistakes such as amazon.com => amazoncom
-        # nopunct_line = ''.join([c for c in line 
-                                            # if re.match("[a-z\-\' \n\t]", c)])
-        # this solve the problem above:
-        nopunct_line = re.sub('[^A-Za-z0-9]+', ' ', line)                                            
+        
+        # Having punctuation removal before POS seems to be a bad idea
+        # # remove punctuation
+        # # below method will simply remove punctuation, but mistakes such as amazon.com => amazoncom
+        # # line = ''.join([c for c in line 
+        #                                     # if re.match("[a-z\-\' \n\t]", c)])
+        # # this solve the problem above:
+        # line = re.sub('[^A-Za-z0-9]+', ' ', line)                                            
+        
         # tokenize
-        line_token = wt(nopunct_line)
+        line_token = wt(line)
         # POS 
         pos_line = pos_tag(line_token)
         # list for all lemmatized terms
@@ -162,14 +163,17 @@ def select_by_pos(line_list):
     for i, line in enumerate(line_list):
         # linercase
         line = line.lower()
-        # remove punctuation
-        # below method will simply remove punctuation, but mistakes such as amazon.com => amazoncom
-        # nopunct_line = ''.join([c for c in line 
-                                            # if re.match("[a-z\-\' \n\t]", c)])
-        # this solve the problem above:
-        nopunct_line = re.sub('[^A-Za-z0-9]+', ' ', line)                                            
+        
+        # Having punctuation removal before POS seems to be a bad idea
+        # # remove punctuation
+        # # below method will simply remove punctuation, but mistakes such as amazon.com => amazoncom
+        # # line = ''.join([c for c in line 
+        #                                     # if re.match("[a-z\-\' \n\t]", c)])
+        # # this solve the problem above:
+        # line = re.sub('[^A-Za-z0-9]+', ' ', line)                                            
+        
         # tokenize
-        line_token = wt(nopunct_line)
+        line_token = wt(line)
         # POS 
         pos_line = pos_tag(line_token)
         # filter line using POS info
@@ -200,14 +204,17 @@ def pos_tagging(line_list):
     for i, line in enumerate(line_list):
         # linercase
         line = line.lower()
-        # remove punctuation
-        # below method will simply remove punctuation, but mistakes such as amazon.com => amazoncom
-        # nopunct_line = ''.join([c for c in line 
-                                            # if re.match("[a-z\-\' \n\t]", c)])
-        # this solve the problem above:
-        nopunct_line = re.sub('[^A-Za-z0-9]+', ' ', line)                                            
+
+        # Having punctuation removal before POS seems to be a bad idae
+        # # remove punctuation
+        # # below method will simply remove punctuation, but mistakes such as amazon.com => amazoncom
+        # # line = ''.join([c for c in line 
+        #                                     # if re.match("[a-z\-\' \n\t]", c)])
+        # # this solve the problem above:
+        # line = re.sub('[^A-Za-z0-9]+', ' ', line)
         # tokenize
-        line_token = wt(nopunct_line)
+        line_token = wt(line)
+
         # POS 
         pos_line = pos_tag(line_token)
         # filter line using POS info
@@ -235,14 +242,17 @@ def pos_bagging(line_list):
     for i, line in enumerate(line_list):
         # linercase
         line = line.lower()
-        # remove punctuation
-        # below method will simply remove punctuation, but mistakes such as amazon.com => amazoncom
-        # nopunct_line = ''.join([c for c in line 
-                                            # if re.match("[a-z\-\' \n\t]", c)])
-        # this solve the problem above:
-        nopunct_line = re.sub('[^A-Za-z0-9]+', ' ', line)                                            
+                
+        # Having punctuation removal before POS seems to be a bad idea
+        # # remove punctuation
+        # # below method will simply remove punctuation, but mistakes such as amazon.com => amazoncom
+        # # line = ''.join([c for c in line 
+        #                                     # if re.match("[a-z\-\' \n\t]", c)])
+        # # this solve the problem above:
+        # line = re.sub('[^A-Za-z0-9]+', ' ', line)                                            
+        
         # tokenize
-        line_token = wt(nopunct_line)
+        line_token = wt(line)
         # POS 
         pos_line = pos_tag(line_token)
         # filter line using POS info
@@ -381,8 +391,8 @@ def sem_wsd_sentence(line_list):
         # tokenize
         line_token = wt(nopunct_line)
         # list of wsd synsets
-        # synset_list = reduce(lambda x,y:x+y, [ [internal_sentence_max_WSD(line_token, x)] for x in line_token if wn.synsets(x) ])
-        synset_list = reduce(lambda x,y:x+y, [ [internal_word_max_WSD(line_token, x)] for x in line_token if wn.synsets(x) ])
+        synset_list = reduce(lambda x,y:x+y, [ [internal_sentence_max_WSD(line_token, x)] for x in line_token if wn.synsets(x) ])
+        # synset_list = reduce(lambda x,y:x+y, [ [internal_word_max_WSD(line_token, x)] for x in line_token if wn.synsets(x) ])
         # format synset into term, e.g. from Synset.share.v.1 -> sharev1
         synset_formatted_list = []
         for synset in synset_list:
@@ -431,8 +441,8 @@ def sem_wsd_corpus(line_list):
         # tokenize
         line_token = wt(nopunct_line)
         # list of wsd synsets
-        # synset_list = reduce(lambda x,y:x+y, [ [internal_sentence_max_WSD(corpus_list, x)] for x in line_token if wn.synsets(x) ])
-        synset_list = reduce(lambda x,y:x+y, [ [internal_word_max_WSD(corpus_list, x)] for x in line_token if wn.synsets(x) ])
+        synset_list = reduce(lambda x,y:x+y, [ [internal_sentence_max_WSD(corpus_list, x)] for x in line_token if wn.synsets(x) ])
+        # synset_list = reduce(lambda x,y:x+y, [ [internal_word_max_WSD(corpus_list, x)] for x in line_token if wn.synsets(x) ])
         # format synset into term, e.g. from Synset.share.v.1 -> sharev1
         synset_formatted_list = []
         for synset in synset_list:
@@ -489,21 +499,21 @@ def sem_wsd_corpus(line_list):
 # Load original datasets
 # data_set = joblib.load('../Dataset/train_datasets/data_set_origin.pkl')
 # data_set = joblib.load('../Dataset/test_datasets/data_set_origin.pkl')
-data_set = joblib.load('../Dataset/trouble_datasets/data_set_origin.pkl')
+# data_set = joblib.load('../Dataset/trouble_datasets/data_set_origin.pkl')
 
 # data_set = joblib.load('../Dataset/train_datasets/data_set_stemmed.pkl')
 # data_set = joblib.load('../Dataset/train_datasets/data_set_lemmatized.pkl')
 # data_set = joblib.load('../Dataset/train_datasets/data_set_lemmatized_pos.pkl')
 
 
-# Timing experiments
-print data_set.data[2:5]
-t0 = time()
-processed_data = stemming(data_set.data)
-print "Done in %fs" % (time() - t0)
-data_set.data = processed_data
-print data_set.data[2:5]
-print len(data_set.data)
+# # Timing experiments
+# print data_set.data[2:5]
+# t0 = time()
+# processed_data = lemmatizing(data_set.data)
+# print "Done in %fs" % (time() - t0)
+# data_set.data = processed_data
+# print data_set.data[2:5]
+# print len(data_set.data)
 
 # stemming
 # lemmatizing
@@ -516,19 +526,6 @@ print len(data_set.data)
 # sem_wsd_corpus
 
 
-# # Trouble datasets
-joblib.dump(data_set, '../Dataset/trouble_datasets/data_set_stemmed.pkl')
-# joblib.dump(data_set, '../Dataset/trouble_datasets/data_set_lemmatized.pkl')
-# joblib.dump(data_set, '../Dataset/trouble_datasets/data_set_lemmatized_pos.pkl')
-# joblib.dump(data_set, '../Dataset/trouble_datasets/data_set_pos_selected.pkl')
-# joblib.dump(data_set, '../Dataset/trouble_datasets/data_set_pos_tagged.pkl')
-# joblib.dump(data_set, '../Dataset/trouble_datasets/data_set_pos_bagged.pkl')
-# joblib.dump(data_set, '../Dataset/trouble_datasets/data_set_sem_firstsense.pkl')
-# joblib.dump(data_set, '../Dataset/trouble_datasets/data_set_sem_internal_word_wsd.pkl') # when using internal_word_max_WSD
-# joblib.dump(data_set, '../Dataset/trouble_datasets/data_set_sem_internal_sentence_wsd.pkl') # when using internal_sentence_max_WSD
-# joblib.dump(data_set, '../Dataset/trouble_datasets/data_set_sem_corpus_word_wsd.pkl') # when using internal_word_max_WSD
-# joblib.dump(data_set, '../Dataset/trouble_datasets/data_set_sem_corpus_sentence_wsd.pkl') # when using internal_sentence_max_WSD
-# 
 # # Train datasets
 # joblib.dump(data_set, '../Dataset/train_datasets/data_set_stemmed.pkl')
 # joblib.dump(data_set, '../Dataset/train_datasets/data_set_lemmatized.pkl')
@@ -557,7 +554,19 @@ joblib.dump(data_set, '../Dataset/trouble_datasets/data_set_stemmed.pkl')
 # joblib.dump(data_set, '../Dataset/test_datasets/data_set_sem_corpus_sentence_wsd.pkl') # when using internal_sentence_max_WSD
 # 
 # 
-
+# # Trouble datasets
+# joblib.dump(data_set, '../Dataset/trouble_datasets/data_set_stemmed.pkl')
+# joblib.dump(data_set, '../Dataset/trouble_datasets/data_set_lemmatized.pkl')
+# joblib.dump(data_set, '../Dataset/trouble_datasets/data_set_lemmatized_pos.pkl')
+# joblib.dump(data_set, '../Dataset/trouble_datasets/data_set_pos_selected.pkl')
+# joblib.dump(data_set, '../Dataset/trouble_datasets/data_set_pos_tagged.pkl')
+# joblib.dump(data_set, '../Dataset/trouble_datasets/data_set_pos_bagged.pkl')
+# joblib.dump(data_set, '../Dataset/trouble_datasets/data_set_sem_firstsense.pkl')
+# joblib.dump(data_set, '../Dataset/trouble_datasets/data_set_sem_internal_word_wsd.pkl') # when using internal_word_max_WSD
+# joblib.dump(data_set, '../Dataset/trouble_datasets/data_set_sem_internal_sentence_wsd.pkl') # when using internal_sentence_max_WSD
+# joblib.dump(data_set, '../Dataset/trouble_datasets/data_set_sem_corpus_word_wsd.pkl') # when using internal_word_max_WSD
+# joblib.dump(data_set, '../Dataset/trouble_datasets/data_set_sem_corpus_sentence_wsd.pkl') # when using internal_sentence_max_WSD
+# 
 
 
 
