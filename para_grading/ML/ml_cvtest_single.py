@@ -3,13 +3,14 @@ import numpy as np
 from operator import itemgetter
 
 from sklearn.datasets import load_files
+from sklearn.utils import shuffle
 from sklearn.feature_extraction.text import Vectorizer
 from sklearn.preprocessing import Normalizer
 from sklearn.feature_selection import SelectKBest, chi2
 
 from sklearn import metrics
 from sklearn.externals import joblib
-from sklearn.cross_validation import KFold
+from sklearn.cross_validation import KFold, StratifiedKFold, ShuffleSplit
 
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.linear_model import RidgeClassifier, LogisticRegression
@@ -32,11 +33,14 @@ import treelearn
 # Load categories
 categories = ['nolimitshare','notsell', 'notsellnotshare', 'notsharemarketing', 'sellshare', 
             'shareforexception', 'shareforexceptionandconsent','shareonlyconsent']
+categories3 = ['good','neutral', 'bad']
 # Load data
 print "Loading privacy policy dataset for categories:"
 print categories if categories else "all"
 data_set = load_files('../Dataset/ShareStatement/raw', categories = categories,
                         shuffle = True, random_state = 42)
+# data_set = load_files('../Dataset/ShareStatement3/raw', categories = categories3,
+#                         shuffle = True, random_state = 42)                        
 print 'data loaded'
 print
 
@@ -71,7 +75,7 @@ vectorizer = Vectorizer(max_features=10000)
 # vectorizer.analyzer.max_n = 2
 
 # Engineering stopword
-vectorizer.analyzer.stop_words = set([])
+# vectorizer.analyzer.stop_words = set([])
 # vectorizer.analyzer.stop_words = set(["amazonnn", "comnn", "incnn", "emcnn", "alexann", "realnetworks", "googlenn", "googlevbp", "linkedinnn",
 #                                     "foxnn", "zyngann", "eann", "yahoorb", "travelzoo", "kalturann", "2cocd", "ign", "blizzardnn",
 #                                     "jobstreetcom", "surveymonkeynn", "microsoftnn", "wraljj", "spenn", "tnn", "mobile", "opendnsnns",
@@ -79,13 +83,15 @@ vectorizer.analyzer.stop_words = set([])
 #                                     "skypenn", "wndnn", "landrovernn", "icuenn", "seinn", "entersectnn", "padealsnns", "acsnns", "enn",
 #                                     "gettynn", "imagesnns", "winampvbp", "lionsgatenn", "opendnnn", "allvoicenn", "padealnn", "imagenn",
 #                                     "jonenn", "acnn", ])
-# vectorizer.analyzer.stop_words = set(["amazon", "com", "inc", "emc", "alexa", "realnetworks", "google", "linkedin",
-#                                     "fox", "zynga", "ea", "yahoo", "travelzoo", "kaltura", "2co", "ign", "blizzard",
-#                                     "jobstreetcom", "surveymonkey", "microsoft", "wral", "spe", "t", "mobile", "opendns",
-#                                     "bentley", "allvoices", "watson", "dyn", "ae", "dow", "jones", "webm", "toysrus", "bonnier",
-#                                     "skype", "wnd", "landrover", "icue", "sei", "entersect", "padeals", "acs", "e",
-#                                     "getty", "images", "winamp", "lionsgate", "opendn", "allvoice", "padeal", "image",
-#                                     "getti", "gett", "jone", "ac"])
+vectorizer.analyzer.stop_words = set(["amazon", "com", "inc", "emc", "alexa", "realnetworks", "google", "linkedin",
+                                    "fox", "zynga", "ea", "yahoo", "travelzoo", "kaltura", "2co", "ign", "blizzard",
+                                    "jobstreetcom", "surveymonkey", "microsoft", "wral", "spe", "t", "mobile", "opendns",
+                                    "bentley", "allvoices", "watson", "dyn", "ae", "dow", "jones", "webm", "toysrus", "bonnier",
+                                    "skype", "wnd", "landrover", "icue", "sei", "entersect", "padeals", "acs", "e",
+                                    "getty", "images", "winamp", "lionsgate", "opendn", "allvoice", "padeal", "image",
+                                    "getti", "gett", "jone", "ac"])
+# vectorizer.analyzer.stop_words = set(['as', 'of', 'in', 'you', 'rent', 'we', 'the', 'sell', 'parties', 'we', 'with', 'not', 'personal',
+#                                     'third', 'to', 'share', 'your', 'information', 'or', ]) #threshold 20 on training set
 # vectorizer.analyzer.stop_words = set(["we", "do", "you", "your", "the", "that", "this", 
 #                                     "is", "was", "are", "were", "being", "be", "been",
 #                                     "for", "of", "as", "in",  "to", "at", "by",
@@ -110,7 +116,7 @@ X = vectorizer.fit_transform(data_set.data)
 vocabulary = np.array([t for t, i in sorted(vectorizer.vocabulary.iteritems(), key=itemgetter(1))])
 
 # # Engineering feature selection
-ch2 = SelectKBest(chi2, k = 120)
+ch2 = SelectKBest(chi2, k = 90)
 X = ch2.fit_transform(X, y)
 
 # X = X.toarray()
@@ -124,28 +130,21 @@ print
 
 
 
-
-
-
-
-
-
 ###############################################################################
-# Test classifier using K-fold Cross Validation
+# Test classifier using n run of K-fold Cross Validation
 
-# Setup 10 fold cross validation
-num_fold = n_samples # leave-one-out
-# num_fold = 5
-kf = KFold(n_samples, k=num_fold, indices=True)
+
+X_orig = X
+y_orig = y
 
 # Note: NBs are not working
 # clf = DecisionTreeClassifier(max_depth=10, min_split=2)
 # clf = LDA() # not working with >2D
 # clf = BernoulliNB(alpha=.1)
-# clf = MultinomialNB(alpha=.01)
+clf = MultinomialNB(alpha=.01)
 # clf = OneVsRestClassifier(LogisticRegression(penalty='l2'))
 # clf = KNeighborsClassifier(n_neighbors=3)
-clf = RidgeClassifier(tol=1e-1)
+# clf = RidgeClassifier(tol=1e-1)
 # clf = SGDClassifier(alpha=.0001, n_iter=50, penalty="elasticnet")
 # clf = LinearSVC(loss='l2', penalty='l2', C=1000, dual=False, tol=1e-3)
 # Add Random Forest from treelearn library
@@ -155,51 +154,71 @@ clf = RidgeClassifier(tol=1e-1)
 #             num_models=20)
 
 
-# Initialize variables for couting the average
-f1_all = 0.0
-acc_all = 0.0
-pre_all = 0.0
-rec_all = 0.0
+num_run = 50
 
-# Test for 10 rounds using the results from 10 fold cross validations
-for train_index, test_index in kf:
+# 50 run of Kfold
+for i in range(num_run):
 
-    X_train, X_test = X[train_index], X[test_index]
-    y_train, y_test = y[train_index], y[test_index]
+    X, y = shuffle(X_orig, y_orig, random_state=i)
 
-    # fit and predict
-    clf.fit(X_train, y_train)
-    pred = clf.predict(X_test)
 
-    # metrics
-    f1_score  = metrics.f1_score(y_test, pred)
-    acc_score = metrics.zero_one_score(y_test, pred)
-    pre_score = metrics.precision_score(y_test, pred)
-    rec_score = metrics.recall_score(y_test, pred)
-    f1_all  += f1_score
-    acc_all += acc_score
-    pre_all += pre_score
-    rec_all += rec_score
+    # Setup 10 fold cross validation
+    # num_fold = n_samples # leave-one-out
+    num_fold = 10
+    # num_fold = 5
+    kf = KFold(n_samples, k=num_fold, indices=True)
+    # Stratified is not valid in our case here, due to limited number of training sample in the smaller sample
+    # kf = StratifiedKFold(y, k=num_fold, indices=True)
+    # 10* ShuffleSplit validation - this is another way to do the n*k
+    # For CV on raw (8 categories) -- 6, 7, 8, 11, 12, 13, 25, 26, 33, 34, 35
+    # kf = ShuffleSplit(n_samples, n_iterations=10, test_fraction=0.1, indices=True, random_state=26)
 
-    # print data_set.target_names
-    # print metrics.classification_report(y_test, pred)
-    # print metrics.confusion_matrix(y_test, pred)
+    # Initialize variables for couting the average
+    f1_all = []
+    acc_all = []
+    pre_all = []
+    rec_all = []
 
-    # # print out top words for each category
-    # for i, category in enumerate(categories):
-    #             top = np.argsort(clf.coef_[i, :])[-50:]
-    #             print "%s: %s" % (category, " ".join(vocabulary[top]))
-    #             print
-    # print
-    # print
+    # Test for 10 rounds using the results from 10 fold cross validations
+    for train_index, test_index in kf:
 
-f1_all  = f1_all/num_fold
-acc_all = acc_all/num_fold
-pre_all = pre_all/num_fold
-rec_all = rec_all/num_fold
+        X_train, X_test = X[train_index], X[test_index]
+        y_train, y_test = y[train_index], y[test_index]
 
-print clf
-print "average f1-score:   %0.5f" % f1_all
-# print "average accuracy:   %0.5f" % acc_all
-print "average precision:  %0.5f" % pre_all
-print "averege recall:     %0.5f" % rec_all
+        # fit and predict
+        clf.fit(X_train, y_train)
+        pred = clf.predict(X_test)
+
+        # metrics
+        f1_score  = metrics.f1_score(y_test, pred)
+        acc_score = metrics.zero_one_score(y_test, pred)
+        pre_score = metrics.precision_score(y_test, pred)
+        rec_score = metrics.recall_score(y_test, pred)
+        f1_all.append(f1_score)
+        acc_all.append(acc_score)
+        pre_all.append(pre_score)
+        rec_all.append(rec_score)
+
+        # print data_set.target_names
+        # print metrics.classification_report(y_test, pred)
+        # print metrics.confusion_matrix(y_test, pred)
+
+        # # print out top words for each category
+        # for i, category in enumerate(categories):
+        #             top = np.argsort(clf.coef_[i, :])[-50:]
+        #             print "%s: %s" % (category, " ".join(vocabulary[top]))
+        #             print
+        # print
+        # print
+
+    # put the lists into numpy array for calculating the results
+    f1_all_array  = np.asarray(f1_all)
+    acc_all_array  = np.asarray(acc_all)
+    pre_all_array  = np.asarray(pre_all)
+    rec_all_array  = np.asarray(rec_all)
+
+    print clf
+    print "average f1-score:   %0.5f (+/- %0.2f)" % ( f1_all_array.mean(), f1_all_array.std() / 2 )
+    print "average accuracy:   %0.5f (+/- %0.2f)" % ( acc_all_array.mean(), acc_all_array.std() / 2 )
+    print "average precision:  %0.5f (+/- %0.2f)" % ( pre_all_array.mean(), pre_all_array.std() / 2 )
+    print "averege recall:     %0.5f (+/- %0.2f)" % ( rec_all_array.mean(), rec_all_array.std() / 2 )
