@@ -17,6 +17,7 @@ from nltk import pos_tag
 from nltk import PorterStemmer 
 from nltk import WordNetLemmatizer
 
+from topia.termextract import extract
 
 
 
@@ -149,7 +150,78 @@ def pos_lemmatizing(line_list):
 
 
 ###############################################################################
-# POS tagging and bagging
+# Negation bigram construction
+
+def negation_bigram(line_list):
+    """
+    Input: line_list (list of strings(sentences/documents)) - e.g. dataset.data
+
+    POS tag the line, match patterns of negations to form bigram terms
+
+    Return: neg_bigram_list (list of strings(terms that meets the POS criteria))
+    """
+    neg_verb_set = ['not', 'never', 'neither']
+    neg_noun_set = ['without']
+    verb_window = 10
+    noun_window = 3
+
+    neg_bigram_list = []
+    for i, line in enumerate(line_list):
+        # linercase
+        line = line.lower()
+        
+        # Having punctuation removal before POS seems to be a bad idea
+        # # remove punctuation
+        # # below method will simply remove punctuation, but mistakes such as amazon.com => amazoncom
+        # # line = ''.join([c for c in line 
+        #                                     # if re.match("[a-z\-\' \n\t]", c)])
+        # # this solve the problem above:
+        # line = re.sub('[^A-Za-z0-9]+', ' ', line)                                            
+        
+        # tokenize
+        line_token = wt(line)
+        # base for return
+        neg_bigram_line = line_token
+        # POS 
+        pos_line = pos_tag(line_token)
+        
+        # first iteration to find flag words
+        neg_verb = None
+        neg_verb_flag = None
+        neg_noun_flag = None
+        for i, tagged_tuple in enumerate(pos_line):
+            term = tagged_tuple[0]
+            if term in neg_verb_set:
+                neg_verb_flag = i
+                neg_verb = term
+            elif term in neg_noun_set:
+                neg_noun_flag = i
+
+        # second iteration to find neg_verb match and form bigram
+        if neg_verb_flag != None:
+            for i, tagged_tuple in enumerate(pos_line):
+                term = tagged_tuple[0]
+                tag  = tagged_tuple[1]
+                if (i-neg_verb_flag)<=verb_window and (i-neg_verb_flag)>0 and tag.startswith('V'):
+                    neg_bigram_line.append(neg_verb+term)
+
+        # third iteration to find neg_noun match and form bigram
+        if neg_noun_flag != None:
+            for i, tagged_tuple in enumerate(pos_line):
+                term = tagged_tuple[0]
+                tag  = tagged_tuple[1]
+                if (i-neg_noun_flag)<=noun_window and (i-neg_noun_flag)>0 and tag.startswith('N'):
+                    neg_bigram_line.append("without"+term)
+        
+        # back to sentence as a string
+        neg_bigram_sentence = ' '.join(neg_bigram_line)
+        neg_bigram_list.append(neg_bigram_sentence)
+    return neg_bigram_list
+
+
+
+###############################################################################
+# term extraction
 
 def select_by_pos(line_list):
     """
@@ -190,6 +262,39 @@ def select_by_pos(line_list):
         POSed_list.append(POSed_sentence)
     return POSed_list
 
+
+def term_extraction(line_list):
+    """
+    Input: line_list (list of strings(sentences/documents)) - e.g. dataset.data
+
+    extract the terms using topia package
+
+    Return: term_list (list of strings(terms that meets the POS criteria))
+    """
+    term_list = []
+    extractor = extract.TermExtractor()
+    extractor.filter = extract.permissiveFilter
+    for line in line_list:
+        # using topia extractor to extract terms
+        terms = extractor(line)
+        # reformat from topia output (term, freq, # of words in term) to single terms
+        term_line = []
+        for (term, i, j) in terms:
+            # deal with terms like "third-party", reformat into "thirdparty"
+            term = ''.join(term.split("-"))
+            # if multi-word phrase, remove space to form a unique word
+            if j > 1:
+                term = ''.join(term.split(" "))
+            term_line.append(term)
+        # back to sentence as a string
+        term_sentence = ' '.join(term_line)
+        term_list.append(term_sentence)
+    return term_list
+
+
+
+###############################################################################
+# POS tagging and bagging
 
 def pos_tagging(line_list):
     """
@@ -505,11 +610,10 @@ def sem_wsd_corpus(line_list):
 # data_set = joblib.load('../Dataset/train_datasets/data_set_lemmatized.pkl')
 # data_set = joblib.load('../Dataset/train_datasets/data_set_lemmatized_pos.pkl')
 
-
 # # Timing experiments
 # print data_set.data[2:5]
 # t0 = time()
-# processed_data = lemmatizing(data_set.data)
+# processed_data = term_extraction(data_set.data)
 # print "Done in %fs" % (time() - t0)
 # data_set.data = processed_data
 # print data_set.data[2:5]
@@ -518,6 +622,8 @@ def sem_wsd_corpus(line_list):
 # stemming
 # lemmatizing
 # pos_lemmatizing
+# negation_bigram
+# term_extraction
 # select_by_pos
 # pos_tagging
 # pos_bagging
@@ -530,6 +636,8 @@ def sem_wsd_corpus(line_list):
 # joblib.dump(data_set, '../Dataset/train_datasets/data_set_stemmed.pkl')
 # joblib.dump(data_set, '../Dataset/train_datasets/data_set_lemmatized.pkl')
 # joblib.dump(data_set, '../Dataset/train_datasets/data_set_lemmatized_pos.pkl')
+# joblib.dump(data_set, '../Dataset/train_datasets/data_set_negation_bigram.pkl')
+# joblib.dump(data_set, '../Dataset/train_datasets/data_set_term_extracted.pkl')
 # joblib.dump(data_set, '../Dataset/train_datasets/data_set_pos_selected.pkl')
 # joblib.dump(data_set, '../Dataset/train_datasets/data_set_pos_tagged.pkl')
 # joblib.dump(data_set, '../Dataset/train_datasets/data_set_pos_bagged.pkl')
@@ -544,6 +652,8 @@ def sem_wsd_corpus(line_list):
 # joblib.dump(data_set, '../Dataset/test_datasets/data_set_stemmed.pkl')
 # joblib.dump(data_set, '../Dataset/test_datasets/data_set_lemmatized.pkl')
 # joblib.dump(data_set, '../Dataset/test_datasets/data_set_lemmatized_pos.pkl')
+# joblib.dump(data_set, '../Dataset/test_datasets/data_set_negation_bigram.pkl')
+# joblib.dump(data_set, '../Dataset/test_datasets/data_set_term_extracted.pkl')
 # joblib.dump(data_set, '../Dataset/test_datasets/data_set_pos_selected.pkl')
 # joblib.dump(data_set, '../Dataset/test_datasets/data_set_pos_tagged.pkl')
 # joblib.dump(data_set, '../Dataset/test_datasets/data_set_pos_bagged.pkl')
@@ -558,6 +668,8 @@ def sem_wsd_corpus(line_list):
 # joblib.dump(data_set, '../Dataset/trouble_datasets/data_set_stemmed.pkl')
 # joblib.dump(data_set, '../Dataset/trouble_datasets/data_set_lemmatized.pkl')
 # joblib.dump(data_set, '../Dataset/trouble_datasets/data_set_lemmatized_pos.pkl')
+# joblib.dump(data_set, '../Dataset/trouble_datasets/data_set_negation_bigram.pkl')
+# joblib.dump(data_set, '../Dataset/trouble_datasets/data_set_term_extracted.pkl')
 # joblib.dump(data_set, '../Dataset/trouble_datasets/data_set_pos_selected.pkl')
 # joblib.dump(data_set, '../Dataset/trouble_datasets/data_set_pos_tagged.pkl')
 # joblib.dump(data_set, '../Dataset/trouble_datasets/data_set_pos_bagged.pkl')
