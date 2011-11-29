@@ -118,32 +118,32 @@ def sim_sem_intermax(sentence1, sentence2, metric=wn.path_similarity, ic=None):
     return sim
 
 
-# Test
-list1 = load_sentences('data_not_sell')
-list2 = load_sentences('data_sell_share')
+# # Test
+# list1 = load_sentences('data_not_sell')
+# list2 = load_sentences('data_sell_share')
 
-sentence1 = list1[0]
-sentence2 = list2[1]
+# sentence1 = list1[0]
+# sentence2 = list2[1]
 
-brown_ic = wordnet_ic.ic('ic-brown.dat')
-semcor_ic = wordnet_ic.ic('ic-semcor.dat')
+# brown_ic = wordnet_ic.ic('ic-brown.dat')
+# semcor_ic = wordnet_ic.ic('ic-semcor.dat')
 
-# sim_sem_intermax(sentence1, sentence2)
+# # sim_sem_intermax(sentence1, sentence2)
 
-score = sim_sem_intermax(sentence1, sentence2)
-print 'path: ', score
-score = sim_sem_intermax(sentence1, sentence2, metric=wn.lch_similarity)
-print 'lch : ', score
-score = sim_sem_intermax(sentence1, sentence2, metric=wn.wup_similarity)
-print 'wup : ', score
-score = sim_sem_intermax(sentence1, sentence2, metric=wn.res_similarity, ic=brown_ic)
-print 'res - brown  : ', score
-score = sim_sem_intermax(sentence1, sentence2, metric=wn.res_similarity, ic=semcor_ic)
-print 'res - semcor : ', score
-score = sim_sem_intermax(sentence1, sentence2, metric=wn.jcn_similarity, ic=brown_ic)
-print 'jcn : ', score
-score = sim_sem_intermax(sentence1, sentence2, metric=wn.lin_similarity, ic=brown_ic)
-print 'lin : ', score
+# score = sim_sem_intermax(sentence1, sentence2)
+# print 'path: ', score
+# score = sim_sem_intermax(sentence1, sentence2, metric=wn.lch_similarity)
+# print 'lch : ', score
+# score = sim_sem_intermax(sentence1, sentence2, metric=wn.wup_similarity)
+# print 'wup : ', score
+# score = sim_sem_intermax(sentence1, sentence2, metric=wn.res_similarity, ic=brown_ic)
+# print 'res - brown  : ', score
+# score = sim_sem_intermax(sentence1, sentence2, metric=wn.res_similarity, ic=semcor_ic)
+# print 'res - semcor : ', score
+# score = sim_sem_intermax(sentence1, sentence2, metric=wn.jcn_similarity, ic=brown_ic)
+# print 'jcn : ', score
+# score = sim_sem_intermax(sentence1, sentence2, metric=wn.lin_similarity, ic=brown_ic)
+# print 'lin : ', score
 
 # Sample results:
 # sentence1 = list1[0]
