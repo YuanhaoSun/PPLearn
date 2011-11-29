@@ -10,6 +10,9 @@ from similarity_utils import load_sentences
 # Calculate sentence semantic similarity base on first sense heuristic without alpha
 def sim_sem_firstsense(sentence1, sentence2, metric=wn.path_similarity, ic=None):
     
+    # Bug fix: lower
+    sentence1 = sentence1.lower()
+    sentence2 = sentence2.lower()
     # import stopwords 
     sw = stopwords.words('english')
     # remove punctuation

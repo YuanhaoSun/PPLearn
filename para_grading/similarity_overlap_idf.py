@@ -5,7 +5,7 @@ from nltk.text import TextCollection
 from similarity_utils import load_sentences
 
 # create the textcollection for calculation of IDF
-list_all_sentences = load_sentences('data_all')
+list_all_sentences = load_sentences('train_all')
 text_collection = TextCollection(list_all_sentences)
 
 

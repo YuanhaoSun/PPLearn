@@ -14,7 +14,7 @@ class PrettyFloat(float):
 # 
 def load_sentences(file_name):
     sentence_list = []
-    f = open('./Dataset/'+file_name+'.txt', 'rb')
+    f = open('./Dataset/simtext/'+file_name+'.txt', 'rb')
     for line in f.readlines():
         line = line.rstrip("\r\n")  # remove '\r\n' at the end of a sentence
         line = line.lower()         # lowercase

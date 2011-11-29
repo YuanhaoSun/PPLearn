@@ -66,6 +66,9 @@ def inter_sentence_max(filtered_line1, synset_list2, metric, ic):
 # Calculate sentence semantic similarity base on first sense heuristic without alpha
 def sim_sem_intermax(sentence1, sentence2, metric=wn.path_similarity, ic=None):
     
+    # Bug fix: lower
+    sentence1 = sentence1.lower()
+    sentence2 = sentence2.lower()
     # import stopwords 
     sw = stopwords.words('english')
     # remove punctuation
