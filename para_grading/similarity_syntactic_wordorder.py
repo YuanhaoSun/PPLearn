@@ -140,46 +140,46 @@ def sim_wordorder(sentence1, sentence2, threshold=0.3, metric=wn.path_similarity
     return sim
 
 
-# Test
-# T1 = 'A quick brown dog jumps over the lazy fox.'
-# T2 = 'A quick blue fox jumps over the lazy dog.'
-# score = sim_wordorder(T1,T2)
-# print score
+# # Test
+# # T1 = 'A quick brown dog jumps over the lazy fox.'
+# # T2 = 'A quick blue fox jumps over the lazy dog.'
+# # score = sim_wordorder(T1,T2)
+# # print score
 
-# Test
-list1 = load_sentences('data_not_sell')
-list2 = load_sentences('data_sell_share')
+# # Test
+# list1 = load_sentences('data_not_sell')
+# list2 = load_sentences('data_sell_share')
 
-sentence1 = list1[0]
-sentence2 = list2[1]
-
-brown_ic = wordnet_ic.ic('ic-brown.dat')
-semcor_ic = wordnet_ic.ic('ic-semcor.dat')
-
-# sim_wordorder(sentence1, sentence2)
-
-score = sim_wordorder(sentence1, sentence2)
-print 'path: ', score
-score = sim_wordorder(sentence1, sentence2, metric=wn.lch_similarity)
-print 'lch : ', score
-score = sim_wordorder(sentence1, sentence2, metric=wn.wup_similarity)
-print 'wup : ', score
-score = sim_wordorder(sentence1, sentence2, metric=wn.res_similarity, ic=brown_ic)
-print 'res - brown  : ', score
-score = sim_wordorder(sentence1, sentence2, metric=wn.res_similarity, ic=semcor_ic)
-print 'res - semcor : ', score
-score = sim_wordorder(sentence1, sentence2, metric=wn.jcn_similarity, ic=brown_ic)
-print 'jcn : ', score
-score = sim_wordorder(sentence1, sentence2, metric=wn.lin_similarity, ic=brown_ic)
-print 'lin : ', score
-
-# Sample results:
 # sentence1 = list1[0]
 # sentence2 = list2[1]
-# path:  0.19306769657
-# lch :  0.250567652287
-# wup :  0.256855951338
-# res - brown  :  0.252420961067
-# res - semcor :  0.252420961067
-# jcn :  0.180138258853
-# lin :  0.310539825618
+
+# brown_ic = wordnet_ic.ic('ic-brown.dat')
+# semcor_ic = wordnet_ic.ic('ic-semcor.dat')
+
+# # sim_wordorder(sentence1, sentence2)
+
+# score = sim_wordorder(sentence1, sentence2)
+# print 'path: ', score
+# score = sim_wordorder(sentence1, sentence2, metric=wn.lch_similarity)
+# print 'lch : ', score
+# score = sim_wordorder(sentence1, sentence2, metric=wn.wup_similarity)
+# print 'wup : ', score
+# score = sim_wordorder(sentence1, sentence2, metric=wn.res_similarity, ic=brown_ic)
+# print 'res - brown  : ', score
+# score = sim_wordorder(sentence1, sentence2, metric=wn.res_similarity, ic=semcor_ic)
+# print 'res - semcor : ', score
+# score = sim_wordorder(sentence1, sentence2, metric=wn.jcn_similarity, ic=brown_ic)
+# print 'jcn : ', score
+# score = sim_wordorder(sentence1, sentence2, metric=wn.lin_similarity, ic=brown_ic)
+# print 'lin : ', score
+
+# # Sample results:
+# # sentence1 = list1[0]
+# # sentence2 = list2[1]
+# # path:  0.19306769657
+# # lch :  0.250567652287
+# # wup :  0.256855951338
+# # res - brown  :  0.252420961067
+# # res - semcor :  0.252420961067
+# # jcn :  0.180138258853
+# # lin :  0.310539825618

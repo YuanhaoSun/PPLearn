@@ -33,7 +33,12 @@ def sim_overlap_idf(sentence1, sentence2):
     intersection_num = len(intersection)
     sentence1_num = len(set(line1))
     # sim = |Q intersect R| / |Q|
-    sim = float(intersection_num) / float(sentence1_num)
+    # sim = float(intersection_num) / float(sentence1_num)
+    # fix a bug
+    try:
+        sim = float(intersection_num) / float(sentence1_num)
+    except:
+        sim = 1
     # sim = ( |Q intersect R| / |Q| ) * Sum(idf_w) for w in (Q intersect R)
     sim = sim * sum_idf
     return sim

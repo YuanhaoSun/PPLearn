@@ -7,9 +7,11 @@ from nltk.corpus import wordnet_ic
 
 from similarity_utils import load_sentences
 
+brown_ic = wordnet_ic.ic('ic-brown.dat')
+
 # Calculate sentence semantic similarity base on first sense heuristic with alpha
-def sim_sem_firstsense_alpha(sentence1, sentence2, metric=wn.path_similarity, ic=None, alpha=0.2):
-    
+# def sim_sem_firstsense_alpha(sentence1, sentence2, metric=wn.path_similarity, ic=None, alpha=0.1):
+def sim_sem_firstsense_alpha(sentence1, sentence2, metric=wn.jcn_similarity, ic=brown_ic, alpha=0.05):
     # Bug fix: lower
     sentence1 = sentence1.lower()
     sentence2 = sentence2.lower()

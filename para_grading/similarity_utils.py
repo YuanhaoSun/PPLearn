@@ -1,4 +1,6 @@
 import itertools
+from time import time
+
 
 # pretty float with for print
 class PrettyFloat(float):
@@ -59,8 +61,10 @@ def iterate_combination_2d_sim(sentence_list_p, sentence_list_q, similarity_meas
     result = []
     for i, sentence_p in enumerate(sentence_list_p):
         result.append([])
+        # t0 = time()
         for j, sentence_q in enumerate(sentence_list_q):
             result[i].append(similarity_measure(sentence_p, sentence_q))
+        # print "done in %fs" % (time() - t0)
     return result
 
 

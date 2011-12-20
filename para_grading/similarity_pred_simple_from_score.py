@@ -1,6 +1,16 @@
 import numpy as np
 from time import time
 
+from sklearn.tree import DecisionTreeClassifier, export_graphviz
+from sklearn.linear_model import RidgeClassifier, LogisticRegression
+from sklearn.linear_model.sparse import SGDClassifier
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.naive_bayes import MultinomialNB, BernoulliNB, GaussianNB
+from sklearn.lda import LDA
+from sklearn.svm.sparse import LinearSVC, SVC
+from sklearn.ensemble import ExtraTreesClassifier, RandomForestClassifier
+from sklearn.multiclass import OneVsRestClassifier
+
 from sklearn.externals import joblib
 from sklearn.datasets import load_files
 from sklearn import metrics
@@ -11,12 +21,26 @@ import similarity_overlap_idf
 import similarity_overlap_phrasal
 import similarity_sem_firstsense_alpha
 import similarity_sem_firstsense_pos
+import similarity_sem_intermax
+import similarity_syntactic_wordorder
 
 
 
-def predict(Dataset_train, Dataset_test, similarity_measure):
+# sim_result_array = joblib.load('./Sim_results/pickles/wordorder_3class_test.pkl')
+# sim_result_array = joblib.load('./Sim_results/pickles/wordorder_8class_test.pkl')
+# sim_result_array = joblib.load('./Sim_results/pickles/intermax_3class_test.pkl')
+sim_result_array = joblib.load('./Sim_results/pickles/intermax_8class_test.pkl')
+# sim_result_array = joblib.load('./Sim_results/pickles/pos_3class_test.pkl')
+# sim_result_array = joblib.load('./Sim_results/pickles/pos_8class_test.pkl')
+# sim_result_array = joblib.load('./Sim_results/pickles/alpha_3class_test.pkl')
+# sim_result_array = joblib.load('./Sim_results/pickles/alpha_8class_test.pkl')
+
+
+def predict(Dataset_train, Dataset_test):
     """
     Generate predict results, given two datasets and similarity_measure
+
+    This is the first predict scheme, without using any machine learning techniques
 
     Return a list of predicted labels, same as pred from scikit-learn classifier.predict(X)
     """
@@ -28,7 +52,8 @@ def predict(Dataset_train, Dataset_test, similarity_measure):
     train_size = len(data_train.data)
     test_size  = len(data_test.data)
     # using utility to get a n*m array of similarity scores
-    sim_result = similarity_utils.iterate_combination_2d_sim(data_test.data, data_train.data, similarity_measure)
+    sim_result = sim_result_array
+    # sim_result = similarity_utils.iterate_combination_2d_sim(data_test.data, data_train.data, similarity_measure)
 
     for i in range(test_size):
         # list for holding sum of scores on each category
@@ -61,11 +86,10 @@ def predict(Dataset_train, Dataset_test, similarity_measure):
         highest_cate = category_scores.index(max(category_scores))
         # append to the pred[]
         pred.append(highest_cate)
-        # convert to numpy array
-        pred_array = np.array(pred)
-
+    
+    # convert to numpy array
+    pred_array = np.array(pred)
     return pred_array
-
 
 
 # Load categories
@@ -73,36 +97,28 @@ categories = ['nolimitshare','notsell', 'notsellnotshare', 'notsharemarketing', 
             'shareforexception', 'shareforexceptionandconsent','shareonlyconsent']
 categories3 = ['good','neutral', 'bad']
 # Load data
-# data_train = load_files('./Dataset/ShareStatement/raw', categories = categories,
-#                         shuffle = True, random_state = 42)
-# data_test = load_files('./Dataset/ShareStatement/test', categories = categories, 
-#                         shuffle = True, random_state = 42)
-data_train = load_files('./Dataset/ShareStatement3/raw', categories = categories3,
+data_train = load_files('./Dataset/ShareStatement/raw', categories = categories,
                         shuffle = True, random_state = 42)
-data_test = load_files('./Dataset/ShareStatement3/test', categories = categories3, 
-                        shuffle = True, random_state = 42)                        
-
-
-# Predict using one of the similarity measures
-t0 = time()
-pred = predict(data_train, data_test, similarity_overlap.sim_overlap)
-# pred = predict(data_train, data_test, similarity_overlap_idf.sim_overlap_idf)
-# pred = predict(data_train, data_test, similarity_overlap_phrasal.sim_overlap_phrasal)
-# pred = predict(data_train, data_test, similarity_sem_firstsense_alpha.sim_sem_firstsense_alpha)
-# pred = predict(data_train, data_test, similarity_sem_firstsense_pos.sim_sem_firstsense_pos)
-print "done in %fs" % (time() - t0)
+data_test = load_files('./Dataset/ShareStatement/test', categories = categories, 
+                        shuffle = True, random_state = 42)
+# data_train = load_files('./Dataset/ShareStatement3/raw', categories = categories3,
+                        # shuffle = True, random_state = 42)
+# data_test = load_files('./Dataset/ShareStatement3/test', categories = categories3, 
+                        # shuffle = True, random_state = 42)
 y_test = data_test.target
+
+# Construct training from train data
+pred = predict(data_train, data_test)
 
 print y_test
 print pred
 
-f1_score = metrics.f1_score(y_test, pred)
-f5_score = metrics.fbeta_score(y_test, pred, beta=0.5)
-acc_score = metrics.zero_one_score(y_test, pred)
+# acc_score = metrics.zero_one_score(y_test, pred)
 pre_score = metrics.precision_score(y_test, pred)
 rec_score = metrics.recall_score(y_test, pred)
+f1_score = ((2*pre_score*rec_score) / (pre_score+rec_score))
+f5_score = ((1.25*pre_score*rec_score) / (0.25*pre_score+rec_score))
 print "f1-score  :   %0.5f" % f1_score
 print "f0.5-score:   %0.5f" % f5_score
-print "accuracy  :   %0.5f" % acc_score
 print "precision :   %0.5f" % pre_score
 print "recall    :   %0.5f" % rec_score
