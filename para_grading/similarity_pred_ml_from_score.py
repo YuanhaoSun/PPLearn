@@ -30,19 +30,29 @@ import similarity_syntactic_wordorder
 # sim_result_array = joblib.load('./Sim_results/pickles/wordorder_8class_test.pkl')
 # sim_result_array = joblib.load('./Sim_results/pickles/intermax_3class_test.pkl')
 # sim_result_array = joblib.load('./Sim_results/pickles/intermax_8class_test.pkl')
-sim_result_array = joblib.load('./Sim_results/pickles/pos_3class_test.pkl')
+# sim_result_array = joblib.load('./Sim_results/pickles/pos_3class_test.pkl')
 # sim_result_array = joblib.load('./Sim_results/pickles/pos_8class_test.pkl')
 # sim_result_array = joblib.load('./Sim_results/pickles/alpha_3class_test.pkl')
 # sim_result_array = joblib.load('./Sim_results/pickles/alpha_8class_test.pkl')
+# sim_result_array = joblib.load('./Sim_results/pickles/hybrid_0.8_3class_test.pkl')
+# sim_result_array = joblib.load('./Sim_results/pickles/hybrid_0.8_8class_test.pkl')
+sim_result_array = joblib.load('./Sim_results/pickles/hybrid_0.5_3class_test.pkl')
+# sim_result_array = joblib.load('./Sim_results/pickles/hybrid_0.5_8class_test.pkl')
+
+
 
 # sim_result_array_train = joblib.load('./Sim_results/pickles/wordorder_3class_train.pkl')
 # sim_result_array_train = joblib.load('./Sim_results/pickles/wordorder_8class_train.pkl')
 # sim_result_array_train = joblib.load('./Sim_results/pickles/intermax_3class_train.pkl')
 # sim_result_array_train = joblib.load('./Sim_results/pickles/intermax_8class_train.pkl')
-sim_result_array_train = joblib.load('./Sim_results/pickles/pos_3class_train.pkl')
+# sim_result_array_train = joblib.load('./Sim_results/pickles/pos_3class_train.pkl')
 # sim_result_array_train = joblib.load('./Sim_results/pickles/pos_8class_train.pkl')
 # sim_result_array_train = joblib.load('./Sim_results/pickles/alpha_3class_train.pkl')
 # sim_result_array_train = joblib.load('./Sim_results/pickles/alpha_8class_train.pkl')
+# sim_result_array_train = joblib.load('./Sim_results/pickles/hybrid_0.8_3class_train.pkl')
+# sim_result_array_train = joblib.load('./Sim_results/pickles/hybrid_0.8_8class_train.pkl')
+sim_result_array_train = joblib.load('./Sim_results/pickles/hybrid_0.5_3class_train.pkl')
+# sim_result_array_train = joblib.load('./Sim_results/pickles/hybrid_0.5_8class_train.pkl')
 
 
 def get_prob(Dataset_train, Dataset_test):

@@ -39,7 +39,7 @@ def stemming(line_list):
         line = line.lower()
         # remove punctuation
         # below method will simply remove punctuation, but mistakes such as amazon.com => amazoncom
-        # nopunct_line = ''.join([c for c in line 
+        # nopunct_line = ''.join([c for c in line
                                             # if re.match("[a-z\-\' \n\t]", c)])
         # this solve the problem above:
         nopunct_line = re.sub('[^A-Za-z0-9]+', ' ', line)                                            
@@ -321,7 +321,10 @@ def pos_tagging(line_list):
         line_token = wt(line)
 
         # POS 
+        # t0 = time()
         pos_line = pos_tag(line_token)
+        # # first run uses about 6.5 s
+        # print "Done in %fs" % (time() - t0)
         # filter line using POS info
         # only remain verbs, nouns, adverbs, adjectives
         tagged_line = []
@@ -399,7 +402,10 @@ def sem_firstsense(line_list):
         # tokenize
         line_token = wt(nopunct_line)
         # list of first-sense synsets
+        # t0 = time()
         synset_list = reduce(lambda x,y:x+y, [ [wn.synsets(x)[0]] for x in line_token if wn.synsets(x) ])
+        # # First run uses about 2.5 s
+        # print "Done in %fs" % (time() - t0)
         # format synset into term, e.g. Synset.share.v.1 -> sharev1
         synset_formatted_list = []
         for synset in synset_list:
@@ -416,6 +422,8 @@ def sem_firstsense(line_list):
     return total_synset_sentence_list
 
 
+
+brown_ic = wordnet_ic.ic('ic-brown.dat')
 
 def internal_word_max_WSD(sentence, word):
     """
@@ -445,7 +453,6 @@ def internal_word_max_WSD(sentence, word):
                 result = synset
     return result
 
-
 def internal_sentence_max_WSD(sentence, word):
     """
     Auxiliary function for sem_wsd()
@@ -455,6 +462,7 @@ def internal_sentence_max_WSD(sentence, word):
     
     Return: synset(sense) of the word that maximize similarity with all other synsets in the sentence
     """    
+    # brown_ic = wordnet_ic.ic('ic-brown.dat')
     wordsynsets = wn.synsets(word)
     bestScore = 0.0
     result = None
@@ -462,7 +470,12 @@ def internal_sentence_max_WSD(sentence, word):
         score = 0.0
         for w in sentence:
             for wsynset in wn.synsets(w):
-                sim = wn.path_similarity(wsynset, synset)
+                # sim = wn.path_similarity(wsynset, synset)
+                # sim = wn.wup_similarity(wsynset, synset)
+                try: # requires to be the same POS, so, using try to assign sim when POS
+                    sim = wn.jcn_similarity(wsynset, synset, ic=brown_ic)
+                except: # use except to avoid error when POSs are not the same
+                    sim = None
                 if(sim == None):
                     continue
                 else:
@@ -567,31 +580,46 @@ def sem_wsd_corpus(line_list):
 
 
 
-###############################################################################
+# ##############################################################################
 # # Save original dataset
-# 
+
 # # Used only once, otherwise if there is change in data set
 # # Load categories
 # categories = ['nolimitshare', 'notsell', 'notsellnotshare', 'notsharemarketing', 'sellshare', 
-            # 'shareforexception', 'shareforexceptionandconsent', 'shareonlyconsent']
+#             'shareforexception', 'shareforexceptionandconsent', 'shareonlyconsent']
+# categories3 = ['good','neutral', 'bad']
+
 # # Load data
 # print "Loading privacy policy dataset for categories:"
-# print categories if categories else "all"
-# data_train = load_files('../Dataset/ShareStatement/raw', categories = categories,
+# # data_train = load_files('../Dataset/ShareStatement/raw', categories = categories,
+# #                         shuffle = True, random_state = 42)
+# # data_test = load_files('../Dataset/ShareStatement/test', categories = categories,
+# #                         shuffle = True, random_state = 42)
+# # data_trouble = load_files('../Dataset/ShareStatement/trouble', categories = categories,
+# #                         shuffle = True, random_state = 42)
+
+# data_train_3class = load_files('../Dataset/ShareStatement3/raw', categories = categories3,
 #                         shuffle = True, random_state = 42)
-# data_test = load_files('../Dataset/ShareStatement/test', categories = categories,
-#                         shuffle = True, random_state = 42)
-# data_trouble = load_files('../Dataset/ShareStatement/trouble', categories = categories,
-                        # shuffle = True, random_state = 42)                        
+# data_test_3class = load_files('../Dataset/ShareStatement3/test', categories = categories3,
+                        # shuffle = True, random_state = 42)
+# data_trouble_3class = load_files('../Dataset/ShareStatement3/trouble', categories = categories3,
+                        # shuffle = True, random_state = 42)
+
 # print 'data loaded'
-# print len(data_train.data)
-# print len(data_test.data)
-# print len(data_trouble.data)
+# # print len(data_train.data)
+# # print len(data_test.data)
+# # print len(data_trouble.data)
+# print len(data_train_3class.data)
+# print len(data_test_3class.data)
+# print len(data_trouble_3class.data)
 # print
 # # Save dataset
-# joblib.dump(data_train, '../Dataset/train_datasets/data_set_origin.pkl')
-# joblib.dump(data_test, '../Dataset/test_datasets/data_set_origin.pkl')
-# joblib.dump(data_trouble, '../Dataset/trouble_datasets/data_set_origin.pkl')
+# # joblib.dump(data_train, '../Dataset/train_datasets/data_set_origin.pkl')
+# # joblib.dump(data_test, '../Dataset/test_datasets/data_set_origin.pkl')
+# # joblib.dump(data_trouble, '../Dataset/trouble_datasets/data_set_origin.pkl')
+# joblib.dump(data_train_3class, '../Dataset/train_datasets_3/data_set_origin.pkl')
+# joblib.dump(data_test_3class, '../Dataset/test_datasets_3/data_set_origin.pkl')
+# joblib.dump(data_trouble_3class, '../Dataset/trouble_datasets_3/data_set_origin.pkl')
 # print 'data_set saved'
 # print
 
@@ -606,18 +634,22 @@ def sem_wsd_corpus(line_list):
 # data_set = joblib.load('../Dataset/test_datasets/data_set_origin.pkl')
 # data_set = joblib.load('../Dataset/trouble_datasets/data_set_origin.pkl')
 
+# data_set = joblib.load('../Dataset/train_datasets_3/data_set_origin.pkl')
+# data_set = joblib.load('../Dataset/test_datasets_3/data_set_origin.pkl')
+# data_set = joblib.load('../Dataset/trouble_datasets_3/data_set_origin.pkl')
+
 # data_set = joblib.load('../Dataset/train_datasets/data_set_stemmed.pkl')
 # data_set = joblib.load('../Dataset/train_datasets/data_set_lemmatized.pkl')
 # data_set = joblib.load('../Dataset/train_datasets/data_set_lemmatized_pos.pkl')
 
-# # Timing experiments
-# print data_set.data[2:5]
-# t0 = time()
-# processed_data = term_extraction(data_set.data)
-# print "Done in %fs" % (time() - t0)
-# data_set.data = processed_data
-# print data_set.data[2:5]
-# print len(data_set.data)
+# Timing experiments
+print data_set.data[2:5]
+t0 = time()
+processed_data = negation_bigram(data_set.data)
+print "Done in %fs" % (time() - t0)
+data_set.data = processed_data
+print data_set.data[2:5]
+print len(data_set.data)
 
 # stemming
 # lemmatizing
@@ -630,6 +662,60 @@ def sem_wsd_corpus(line_list):
 # sem_firstsense
 # sem_wsd_sentence
 # sem_wsd_corpus
+
+
+# # Train datasets
+# joblib.dump(data_set, '../Dataset/train_datasets_3/data_set_stemmed.pkl')
+# joblib.dump(data_set, '../Dataset/train_datasets_3/data_set_lemmatized.pkl')
+# joblib.dump(data_set, '../Dataset/train_datasets_3/data_set_lemmatized_pos.pkl')
+# joblib.dump(data_set, '../Dataset/train_datasets_3/data_set_negation_bigram.pkl')
+# joblib.dump(data_set, '../Dataset/train_datasets_3/data_set_term_extracted.pkl')
+# joblib.dump(data_set, '../Dataset/train_datasets_3/data_set_pos_selected.pkl')
+# joblib.dump(data_set, '../Dataset/train_datasets_3/data_set_pos_tagged.pkl')
+# joblib.dump(data_set, '../Dataset/train_datasets_3/data_set_pos_bagged.pkl')
+# joblib.dump(data_set, '../Dataset/train_datasets_3/data_set_sem_firstsense.pkl')
+# joblib.dump(data_set, '../Dataset/train_datasets_3/data_set_sem_internal_word_wsd.pkl') # when using internal_word_max_WSD
+# joblib.dump(data_set, '../Dataset/train_datasets_3/data_set_sem_internal_sentence_wsd.pkl') # when using internal_sentence_max_WSD
+# joblib.dump(data_set, '../Dataset/train_datasets_3/data_set_sem_corpus_word_wsd.pkl') # when using internal_word_max_WSD
+# joblib.dump(data_set, '../Dataset/train_datasets_3/data_set_sem_corpus_sentence_wsd.pkl') # when using internal_sentence_max_WSD
+#
+# joblib.dump(data_set, '../Dataset/train_datasets/data_set_sem_internal_sentence_wsd_wu.pkl') # when using internal_sentence_max_WSD
+# joblib.dump(data_set, '../Dataset/train_datasets_3/data_set_sem_internal_sentence_wsd_jiang.pkl') # when using internal_sentence_max_WSD
+# joblib.dump(data_set, '../Dataset/train_datasets_3/data_set_sem_internal_sentence_wsd.pkl') # when using internal_sentence_max_WSD
+
+
+# 
+# # Test datasets
+# joblib.dump(data_set, '../Dataset/test_datasets_3/data_set_stemmed.pkl')
+# joblib.dump(data_set, '../Dataset/test_datasets_3/data_set_lemmatized.pkl')
+# joblib.dump(data_set, '../Dataset/test_datasets_3/data_set_lemmatized_pos.pkl')
+# joblib.dump(data_set, '../Dataset/test_datasets_3/data_set_negation_bigram.pkl')
+# joblib.dump(data_set, '../Dataset/test_datasets_3/data_set_term_extracted.pkl')
+# joblib.dump(data_set, '../Dataset/test_datasets_3/data_set_pos_selected.pkl')
+# joblib.dump(data_set, '../Dataset/test_datasets_3/data_set_pos_tagged.pkl')
+# joblib.dump(data_set, '../Dataset/test_datasets_3/data_set_pos_bagged.pkl')
+# joblib.dump(data_set, '../Dataset/test_datasets_3/data_set_sem_firstsense.pkl')
+# joblib.dump(data_set, '../Dataset/test_datasets_3/data_set_sem_internal_word_wsd.pkl') # when using internal_word_max_WSD
+# joblib.dump(data_set, '../Dataset/test_datasets_3/data_set_sem_internal_sentence_wsd.pkl') # when using internal_sentence_max_WSD
+# joblib.dump(data_set, '../Dataset/test_datasets_3/data_set_sem_corpus_word_wsd.pkl') # when using internal_word_max_WSD
+# joblib.dump(data_set, '../Dataset/test_datasets_3/data_set_sem_corpus_sentence_wsd.pkl') # when using internal_sentence_max_WSD
+# 
+# 
+# # Trouble datasets
+# joblib.dump(data_set, '../Dataset/trouble_datasets_3/data_set_stemmed.pkl')
+# joblib.dump(data_set, '../Dataset/trouble_datasets_3/data_set_lemmatized.pkl')
+# joblib.dump(data_set, '../Dataset/trouble_datasets_3/data_set_lemmatized_pos.pkl')
+# joblib.dump(data_set, '../Dataset/trouble_datasets_3/data_set_negation_bigram.pkl')
+# joblib.dump(data_set, '../Dataset/trouble_datasets_3/data_set_term_extracted.pkl')
+# joblib.dump(data_set, '../Dataset/trouble_datasets_3/data_set_pos_selected.pkl')
+# joblib.dump(data_set, '../Dataset/trouble_datasets_3/data_set_pos_tagged.pkl')
+# joblib.dump(data_set, '../Dataset/trouble_datasets_3/data_set_pos_bagged.pkl')
+# joblib.dump(data_set, '../Dataset/trouble_datasets_3/data_set_sem_firstsense.pkl')
+# joblib.dump(data_set, '../Dataset/trouble_datasets_3/data_set_sem_internal_word_wsd.pkl') # when using internal_word_max_WSD
+# joblib.dump(data_set, '../Dataset/trouble_datasets_3/data_set_sem_internal_sentence_wsd.pkl') # when using internal_sentence_max_WSD
+# joblib.dump(data_set, '../Dataset/trouble_datasets_3/data_set_sem_corpus_word_wsd.pkl') # when using internal_word_max_WSD
+# joblib.dump(data_set, '../Dataset/trouble_datasets_3/data_set_sem_corpus_sentence_wsd.pkl') # when using internal_sentence_max_WSD
+#
 
 
 # # Train datasets
@@ -646,6 +732,7 @@ def sem_wsd_corpus(line_list):
 # joblib.dump(data_set, '../Dataset/train_datasets/data_set_sem_internal_sentence_wsd.pkl') # when using internal_sentence_max_WSD
 # joblib.dump(data_set, '../Dataset/train_datasets/data_set_sem_corpus_word_wsd.pkl') # when using internal_word_max_WSD
 # joblib.dump(data_set, '../Dataset/train_datasets/data_set_sem_corpus_sentence_wsd.pkl') # when using internal_sentence_max_WSD
+# joblib.dump(data_set, '../Dataset/train_datasets/data_set_sem_corpus_sentence_wsd_jiang.pkl') # when using internal_sentence_max_WSD
 #
 # 
 # # Test datasets
@@ -678,7 +765,7 @@ def sem_wsd_corpus(line_list):
 # joblib.dump(data_set, '../Dataset/trouble_datasets/data_set_sem_internal_sentence_wsd.pkl') # when using internal_sentence_max_WSD
 # joblib.dump(data_set, '../Dataset/trouble_datasets/data_set_sem_corpus_word_wsd.pkl') # when using internal_word_max_WSD
 # joblib.dump(data_set, '../Dataset/trouble_datasets/data_set_sem_corpus_sentence_wsd.pkl') # when using internal_sentence_max_WSD
-# 
+#
 
 
 

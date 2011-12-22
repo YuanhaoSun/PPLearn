@@ -29,12 +29,15 @@ import similarity_syntactic_wordorder
 # sim_result_array = joblib.load('./Sim_results/pickles/wordorder_3class_test.pkl')
 # sim_result_array = joblib.load('./Sim_results/pickles/wordorder_8class_test.pkl')
 # sim_result_array = joblib.load('./Sim_results/pickles/intermax_3class_test.pkl')
-sim_result_array = joblib.load('./Sim_results/pickles/intermax_8class_test.pkl')
+# sim_result_array = joblib.load('./Sim_results/pickles/intermax_8class_test.pkl')
 # sim_result_array = joblib.load('./Sim_results/pickles/pos_3class_test.pkl')
 # sim_result_array = joblib.load('./Sim_results/pickles/pos_8class_test.pkl')
 # sim_result_array = joblib.load('./Sim_results/pickles/alpha_3class_test.pkl')
 # sim_result_array = joblib.load('./Sim_results/pickles/alpha_8class_test.pkl')
-
+sim_result_array = joblib.load('./Sim_results/pickles/hybrid_0.8_3class_test.pkl')
+# sim_result_array = joblib.load('./Sim_results/pickles/hybrid_0.8_8class_test.pkl')
+# sim_result_array = joblib.load('./Sim_results/pickles/hybrid_0.5_3class_test.pkl')
+# sim_result_array = joblib.load('./Sim_results/pickles/hybrid_0.5_8class_test.pkl')
 
 def predict(Dataset_train, Dataset_test):
     """
@@ -97,14 +100,14 @@ categories = ['nolimitshare','notsell', 'notsellnotshare', 'notsharemarketing', 
             'shareforexception', 'shareforexceptionandconsent','shareonlyconsent']
 categories3 = ['good','neutral', 'bad']
 # Load data
-data_train = load_files('./Dataset/ShareStatement/raw', categories = categories,
-                        shuffle = True, random_state = 42)
-data_test = load_files('./Dataset/ShareStatement/test', categories = categories, 
-                        shuffle = True, random_state = 42)
-# data_train = load_files('./Dataset/ShareStatement3/raw', categories = categories3,
+# data_train = load_files('./Dataset/ShareStatement/raw', categories = categories,
                         # shuffle = True, random_state = 42)
-# data_test = load_files('./Dataset/ShareStatement3/test', categories = categories3, 
+# data_test = load_files('./Dataset/ShareStatement/test', categories = categories, 
                         # shuffle = True, random_state = 42)
+data_train = load_files('./Dataset/ShareStatement3/raw', categories = categories3,
+                        shuffle = True, random_state = 42)
+data_test = load_files('./Dataset/ShareStatement3/test', categories = categories3, 
+                        shuffle = True, random_state = 42)
 y_test = data_test.target
 
 # Construct training from train data

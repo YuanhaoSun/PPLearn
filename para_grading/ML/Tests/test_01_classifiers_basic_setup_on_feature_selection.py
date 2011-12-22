@@ -39,29 +39,29 @@ categories3 = ['good','neutral', 'bad']
 # # Load data
 # print "Loading privacy policy dataset for categories:"
 # print categories if categories else "all"
-# data_set = load_files('../Dataset/ShareStatement/raw', categories = categories,
+# data_set = load_files('../../Dataset/ShareStatement/raw', categories = categories,
                         # shuffle = True, random_state = 42)
-data_set = load_files('../Dataset/ShareStatement3/raw', categories = categories3,
+data_set = load_files('../../Dataset/ShareStatement3/raw', categories = categories3,
                         shuffle = True, random_state = 42)
 # print 'data loaded'
 # print
 
-# data_set = joblib.load('../Dataset/test_datasets/data_set_pos_tagged.pkl')
+# data_set = joblib.load('../../Dataset/test_datasets/data_set_pos_tagged.pkl')
 
 # load from pickle
 # load data and initialize classification variables
-# data_set = joblib.load('../Dataset/train_datasets/data_set_origin.pkl')
-# data_set = joblib.load('../Dataset/train_datasets/data_set_stemmed.pkl')
-# data_set = joblib.load('../Dataset/train_datasets/data_set_lemmatized.pkl')
-# data_set = joblib.load('../Dataset/train_datasets/data_set_lemmatized_pos.pkl')
-# data_set = joblib.load('../Dataset/train_datasets/data_set_pos_selected.pkl')
-# data_set = joblib.load('../Dataset/train_datasets/data_set_pos_tagged.pkl')
-# data_set = joblib.load('../Dataset/train_datasets/data_set_pos_bagged.pkl')
-# data_set = joblib.load('../Dataset/train_datasets/data_set_sem_firstsense.pkl')
-# data_set = joblib.load('../Dataset/train_datasets/data_set_sem_internal_sentence_wsd.pkl')
-# data_set = joblib.load('../Dataset/train_datasets/data_set_sem_corpus_sentence_wsd.pkl')
-# data_set = joblib.load('../Dataset/train_datasets/data_set_sem_corpus_word_wsd.pkl')
-# data_set = joblib.load('../Dataset/train_datasets/data_set_sem_internal_word_wsd.pkl')
+# data_set = joblib.load('../../Dataset/train_datasets/data_set_origin.pkl')
+# data_set = joblib.load('../../Dataset/train_datasets/data_set_stemmed.pkl')
+# data_set = joblib.load('../../Dataset/train_datasets/data_set_lemmatized.pkl')
+# data_set = joblib.load('../../Dataset/train_datasets/data_set_lemmatized_pos.pkl')
+# data_set = joblib.load('../../Dataset/train_datasets/data_set_pos_selected.pkl')
+# data_set = joblib.load('../../Dataset/train_datasets/data_set_pos_tagged.pkl')
+# data_set = joblib.load('../../Dataset/train_datasets/data_set_pos_bagged.pkl')
+# data_set = joblib.load('../../Dataset/train_datasets/data_set_sem_firstsense.pkl')
+# data_set = joblib.load('../../Dataset/train_datasets/data_set_sem_internal_sentence_wsd.pkl')
+# data_set = joblib.load('../../Dataset/train_datasets/data_set_sem_corpus_sentence_wsd.pkl')
+# data_set = joblib.load('../../Dataset/train_datasets/data_set_sem_corpus_word_wsd.pkl')
+# data_set = joblib.load('../../Dataset/train_datasets/data_set_sem_internal_word_wsd.pkl')
 categories = data_set.target_names
 
 

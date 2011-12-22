@@ -10,7 +10,6 @@ from sklearn.preprocessing import Normalizer
 from sklearn.feature_selection import SelectKBest, chi2
 
 from sklearn import metrics
-import ml_metrics
 from sklearn.externals import joblib
 from sklearn.cross_validation import KFold, StratifiedKFold, ShuffleSplit
 
@@ -40,29 +39,29 @@ categories3 = ['good','neutral', 'bad']
 # # Load data
 # print "Loading privacy policy dataset for categories:"
 # print categories if categories else "all"
-data_set = load_files('../Dataset/ShareStatement/raw', categories = categories,
+data_set = load_files('../../Dataset/ShareStatement/raw', categories = categories,
                         shuffle = True, random_state = 42)
-# data_set = load_files('../Dataset/ShareStatement3/raw', categories = categories3,
+# data_set = load_files('../../Dataset/ShareStatement3/raw', categories = categories3,
                         # shuffle = True, random_state = 42)
 # print 'data loaded'
 # print
 
-# data_set = joblib.load('../Dataset/test_datasets/data_set_pos_tagged.pkl')
+# data_set = joblib.load('../../Dataset/test_datasets/data_set_pos_tagged.pkl')
 
 # load from pickle
 # load data and initialize classification variables
-# data_set = joblib.load('../Dataset/train_datasets/data_set_origin.pkl')
-# data_set = joblib.load('../Dataset/train_datasets/data_set_stemmed.pkl')
-# data_set = joblib.load('../Dataset/train_datasets/data_set_lemmatized.pkl')
-# data_set = joblib.load('../Dataset/train_datasets/data_set_lemmatized_pos.pkl')
-# data_set = joblib.load('../Dataset/train_datasets/data_set_pos_selected.pkl')
-# data_set = joblib.load('../Dataset/train_datasets/data_set_pos_tagged.pkl')
-# data_set = joblib.load('../Dataset/train_datasets/data_set_pos_bagged.pkl')
-# data_set = joblib.load('../Dataset/train_datasets/data_set_sem_firstsense.pkl')
-# data_set = joblib.load('../Dataset/train_datasets/data_set_sem_internal_sentence_wsd.pkl')
-# data_set = joblib.load('../Dataset/train_datasets/data_set_sem_corpus_sentence_wsd.pkl')
-# data_set = joblib.load('../Dataset/train_datasets/data_set_sem_corpus_word_wsd.pkl')
-# data_set = joblib.load('../Dataset/train_datasets/data_set_sem_internal_word_wsd.pkl')
+# data_set = joblib.load('../../Dataset/train_datasets/data_set_origin.pkl')
+# data_set = joblib.load('../../Dataset/train_datasets/data_set_stemmed.pkl')
+# data_set = joblib.load('../../Dataset/train_datasets/data_set_lemmatized.pkl')
+# data_set = joblib.load('../../Dataset/train_datasets/data_set_lemmatized_pos.pkl')
+# data_set = joblib.load('../../Dataset/train_datasets/data_set_pos_selected.pkl')
+# data_set = joblib.load('../../Dataset/train_datasets/data_set_pos_tagged.pkl')
+# data_set = joblib.load('../../Dataset/train_datasets/data_set_pos_bagged.pkl')
+# data_set = joblib.load('../../Dataset/train_datasets/data_set_sem_firstsense.pkl')
+# data_set = joblib.load('../../Dataset/train_datasets/data_set_sem_internal_sentence_wsd.pkl')
+# data_set = joblib.load('../../Dataset/train_datasets/data_set_sem_corpus_sentence_wsd.pkl')
+# data_set = joblib.load('../../Dataset/train_datasets/data_set_sem_corpus_word_wsd.pkl')
+# data_set = joblib.load('../../Dataset/train_datasets/data_set_sem_internal_word_wsd.pkl')
 categories = data_set.target_names
 
 
@@ -93,8 +92,15 @@ vectorizer.analyzer.stop_words = set([])
 #                                     "skype", "wnd", "landrover", "icue", "sei", "entersect", "padeals", "acs", "e",
 #                                     "getty", "images", "winamp", "lionsgate", "opendn", "allvoice", "padeal", "image",
 #                                     "getti", "gett", "jone", "ac"])
+# vectorizer.analyzer.stop_words = set(["amazon", "com", "inc", "emc", "alexa", "realnetworks", "google", "linkedin",
+#                                     "fox", "zynga", "ea", "yahoo", "travelzoo", "kaltura", "2co", "ign", "blizzard",
+#                                     "jobstreetcom", "surveymonkey", "microsoft", "wral", "spe", "t", "mobile", "opendns",
+#                                     "bentley", "allvoices", "watson", "dyn", "ae", "dow", "jones", "webm", "toysrus", "bonnier",
+#                                     "skype", "wnd", "landrover", "icue", "sei", "entersect", "padeals", "acs", "e",
+#                                     "getty", "images", "winamp", "lionsgate", "opendn", "allvoice", "padeal", "image",
+#                                     "getti", "gett", "jone", "ac", "not"])
 # vectorizer.analyzer.stop_words = set(['as', 'of', 'in', 'you', 'rent', 'we', 'the', 'sell', 'parties', 'we', 'with', 'not', 'personal',
-#                                     'third', 'to', 'share', 'your', 'information', 'or', ]) #threshold 20 on training set
+                                    # 'third', 'to', 'share', 'your', 'information', 'or', ]) #threshold 20 on training set
 # vectorizer.analyzer.stop_words = set(["we", "do", "you", "your", "the", "that", "this", 
 #                                     "is", "was", "are", "were", "being", "be", "been",
 #                                     "for", "of", "as", "in",  "to", "at", "by",
@@ -122,19 +128,17 @@ print
 
 
 
-
-
 ###############################################################################
 # Test classifier using n run of K-fold Cross Validation
 
 X_orig = X
 y_orig = y
 
-clf = BernoulliNB(alpha=.1) # used for grading classification
-# clf = RidgeClassifier(tol=1e-1)
+# clf = BernoulliNB(alpha=.1) # used for grading classification
+clf = RidgeClassifier(tol=1e-1)
 print clf
 
-num_run = 10
+num_run = 50
 
 # lists to hold all n*k data
 f1_total = []
@@ -188,10 +192,7 @@ for i in range(num_run):
     rec_total += rec_all
 
     # Result for each run
-    # print "average accuracy:   %0.5f (+/- %0.2f)" % ( acc_all_array.mean(), acc_all_array.std() / 2 )
-    # print "average precision:  %0.5f (+/- %0.2f)" % ( pre_all_array.mean(), pre_all_array.std() / 2 )
-    # print "averege recall:     %0.5f (+/- %0.2f)" % ( rec_all_array.mean(), rec_all_array.std() / 2 )
-
+    print ( (2*pre_all_array.mean()*rec_all_array.mean()) / (rec_all_array.mean()+pre_all_array.mean()) )
 
 # put the total k*n lists into numpy array for calculating the overall results
 acc_total_array  = np.asarray(acc_total)
@@ -202,5 +203,5 @@ rec_total_array  = np.asarray(rec_total)
 print "Overall precision:  %0.5f (+/- %0.2f)" % ( pre_total_array.mean(), pre_total_array.std() / 2 )
 print "Overall recall:     %0.5f (+/- %0.2f)" % ( rec_total_array.mean(), rec_total_array.std() / 2 )
 # print (2*pre_total_array.mean()*rec_total_array.mean())/(rec_total_array.mean()+pre_total_array.mean())
-print "Overall f1-score:   %0.5f (+/- %0.2f)" % ( (2*pre_total_array.mean()*rec_total_array.mean())/(rec_total_array.mean()+pre_total_array.mean()), f1_total_array.std() / 2 )
-print "Overall f0.5-score: %0.5f (+/- %0.2f)" % ( (1.25*pre_total_array.mean()*rec_total_array.mean())/(rec_total_array.mean()+0.25*pre_total_array.mean()), f1_total_array.std() / 2 )
+print "Overall f1-score:   %0.5f" % ( (2*pre_total_array.mean()*rec_total_array.mean()) / (rec_total_array.mean()+pre_total_array.mean()) )
+print "Overall f0.5-score: %0.5f" % ( (1.25*pre_total_array.mean()*rec_total_array.mean()) / (rec_total_array.mean()+0.25*pre_total_array.mean()) )

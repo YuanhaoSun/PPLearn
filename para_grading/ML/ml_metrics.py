@@ -156,6 +156,11 @@ def precision_recall_fscore_support(y_true, y_pred, beta=1.0, labels=None):
         precision = true_pos.sum() / (true_pos.sum() + false_pos.sum())
         recall = true_pos.sum() / (true_pos.sum() + false_neg.sum())
 
+        # print false_pos
+        # print false_neg
+        # print false_pos.sum()
+        # print false_neg.sum()
+
         # # handle division by 0.0 in precision and recall
         # precision[(true_pos + false_pos) == 0.0] = 0.0
         # recall[(true_pos + false_neg) == 0.0] = 0.0
@@ -164,8 +169,11 @@ def precision_recall_fscore_support(y_true, y_pred, beta=1.0, labels=None):
         beta2 = beta ** 2
         fscore = (1 + beta2) * (precision * recall) / (
             beta2 * precision + recall)
+        # print (beta2 * precision + recall)
 
-        # # handle division by 0.0 in fscore
+        # handle division by 0.0 in fscore
+        if (precision + recall) == 0.0:
+            fscore = 0.0
         # fscore[(precision + recall) == 0.0] = 0.0
     finally:
         np.seterr(**old_err_settings)
@@ -236,19 +244,24 @@ def precision_recall_fscore_support_macro(y_true, y_pred, beta=1.0, labels=None)
 
         # precision and recall
         # Macro-averaging is used
-        precision = np.mean(true_pos / (true_pos + false_pos))
-        recall = np.mean(true_pos / (true_pos + false_neg))
+        precision_in_process = (true_pos / (true_pos + false_pos))
+        recall_in_process = (true_pos / (true_pos + false_neg))
 
-        # # handle division by 0.0 in precision and recall
-        # precision[(true_pos + false_pos) == 0.0] = 0.0
-        # recall[(true_pos + false_neg) == 0.0] = 0.0
+        # handle division by 0.0 in precision and recall
+        precision_in_process[(true_pos + false_pos) == 0.0] = 0.0
+        recall_in_process[(true_pos + false_neg) == 0.0] = 0.0
 
+        precision = np.mean(precision_in_process)
+        recall = np.mean(recall_in_process)
+        
         # fbeta score
         beta2 = beta ** 2
         fscore = (1 + beta2) * (precision * recall) / (
             beta2 * precision + recall)
 
-        # # handle division by 0.0 in fscore
+        # handle division by 0.0 in fscore
+        if (precision + recall) == 0.0:
+            fscore = 0.0
         # fscore[(precision + recall) == 0.0] = 0.0
 
     finally:
@@ -259,29 +272,30 @@ def precision_recall_fscore_support_macro(y_true, y_pred, beta=1.0, labels=None)
 
 
 
-# Test using the example in LinePipe tutorial Fig 8.1-8.3
-y_list    = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2]
-pred_list = [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 2, 0, 1, 2, 2, 2, 2]
-y = np.array(y_list)
-pred = np.array(pred_list)
+# # Test using the example in LinePipe tutorial Fig 8.1-8.3
+# y_list    = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2]
+# # pred_list = [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 2, 0, 1, 2, 2, 2, 2]
+# pred_list = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 2, 2]
+# y = np.array(y_list)
+# pred = np.array(pred_list)
 
-print metrics.confusion_matrix(y, pred)
-print
+# print metrics.confusion_matrix(y, pred)
+# print
 
-print "Wei Pre:", precision_weighted_score(y, pred)
-print "Wei Rec:", recall_weighted_score(y, pred)
-print "Wei F1 :", f1_weighted_score(y, pred)
-print "Wei F5 :", fbeta_weighted_score(y, pred, 0.5)
-print
+# print "Wei Pre:", precision_weighted_score(y, pred)
+# print "Wei Rec:", recall_weighted_score(y, pred)
+# print "Wei F1 :", f1_weighted_score(y, pred)
+# print "Wei F5 :", fbeta_weighted_score(y, pred, 0.5)
+# print
 
-print "Mic Pre:", precision_score(y, pred)
-print "Mic Rec:", recall_score(y, pred)
-print "Mic F1 :", f1_score(y, pred)
-print "Mic F5 :", fbeta_score(y, pred, 0.5)
-print
+# print "Mic Pre:", precision_score(y, pred)
+# print "Mic Rec:", recall_score(y, pred)
+# print "Mic F1 :", f1_score(y, pred)
+# print "Mic F5 :", fbeta_score(y, pred, 0.5)
+# print
 
-print "Mac Pre:", precision_macro_score(y, pred)
-print "Mac Rec:", recall_macro_score(y, pred)
-print "Mac F1 :", f1_macro_score(y, pred)
-print "Mac F5 :", fbeta_macro_score(y, pred, 0.5)
+# print "Mac Pre:", precision_macro_score(y, pred)
+# print "Mac Rec:", recall_macro_score(y, pred)
+# print "Mac F1 :", f1_macro_score(y, pred)
+# print "Mac F5 :", fbeta_macro_score(y, pred, 0.5)
 
